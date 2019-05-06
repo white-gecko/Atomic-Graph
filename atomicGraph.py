@@ -1,14 +1,39 @@
 import rdflib
+from rdflib.compare import to_isomorphic
 
 
 class GraphSlicer:
     def __init__(self, graph):
         self.graph = graph
         self.atomicGraphs = []
-        self.currentAtomicGraph = rdflib.Graph()
+        self.currentAtomicGraph = AtomicGraph()
         self.nextNodeOther = []
         self.nextNodeBlank = []
         self.nextNodeCurrent = []
+
+    def __eq__(self, graph):
+        numOfAGraphs = self.getNumberOfAtomicGraphs()
+        if(numOfAGraphs == graph.getNumberOfAtomicGraphs()):
+            index = 0
+            for i in range(0, numOfAGraphs):
+                # TODO  use index to cull the beginnig of otherGraphArray
+                if(not graph.inAtomicList(self.atomicGraphs[i], index,
+                                          numOfAGraphs)):
+                    return False
+            # TODO this kind of comparison is only injective not bijective
+            return True
+        return False
+
+    def inAtomicList(self, element, i, maxIndex):
+        index = i
+        for index in range(i, maxIndex):
+            current = self.atomicGraphs[index]
+            # early returns
+            if(current < element):
+                return False
+            if(element.equal(current)):
+                return True
+        return False
 
     def isAtomic(self, rdfsubject, rdfobject):
         if not (rdfsubject.n3()[:2] == "_:" or rdfobject.n3()[:2] == "_:"):
@@ -23,7 +48,7 @@ class GraphSlicer:
 
     def atomic(self, statement, newNode):
         if(self.isAtomic(statement[0], statement[2])):
-            self.atomicGraphs.append(rdflib.Graph())
+            self.atomicGraphs.append(AtomicGraph())
             self.atomicGraphs[-1].add(statement)
             self.graph.remove(statement)
             self.nextNodeOther.append(statement[newNode])
@@ -53,7 +78,7 @@ class GraphSlicer:
         # if no further nodes are found the current atomic graph is done
         if(self.currentAtomicGraph):
             self.atomicGraphs.append(self.currentAtomicGraph)
-            self.currentAtomicGraph = rdflib.Graph()
+            self.currentAtomicGraph = AtomicGraph()
         if(self.nextNodeBlank):
             return self.nextNodeBlank.pop()
         if(self.nextNodeOther):
@@ -70,6 +95,57 @@ class GraphSlicer:
                 node = self.nextNode()
             # in case the graph has disconnected parts
             node = next(iter(self.graph.all_nodes()), False)
+        self.atomicGraphs.sort(key=lambda atomic: (atomic.getMeta()[0],
+                                                   atomic.getMeta()[1]),
+                               reverse=True)
 
     def getAtomicGraphs(self):
         return self.atomicGraphs
+
+    def getNumberOfAtomicGraphs(self):
+        return len(self.atomicGraphs)
+
+
+class AtomicGraph(rdflib.Graph):
+    numberOfBNodes = 0
+    maxNumbersNeighbors = 0
+
+    def equal(self, graph):
+        result = False
+        if(self.compareMeta(graph.getMeta())):
+            # TODO this is only a place holder
+            # the point was to use a better version of comparision then
+            # standard rdflib isomorphism
+            iso1 = to_isomorphic(self)
+            iso2 = to_isomorphic(graph)
+            result = iso1 == iso2
+        return result
+
+    def __ge__(self, graph):
+        other_meta = graph.getMeta()
+        if(self.numberOfBNodes > other_meta[0] or (
+            self.numberOfBNodes == other_meta[0] and (
+                self.maxNumbersNeighbors >= other_meta[1]))):
+            return True
+        return False
+
+    def __lt__(self, graph):
+        other_meta = graph.getMeta()
+        if(self.numberOfBNodes < other_meta[0] or (
+            self.numberOfBNodes == other_meta[0] and (
+                self.maxNumbersNeighbors < other_meta[1]))):
+            return True
+        return False
+
+    def compareMeta(self, metaArray):
+        return ((self.numberOfBNodes == metaArray[0]) and(
+            self.maxNumbersNeighbors == metaArray[1]))
+
+    def getMeta(self):
+        return [self.numberOfBNodes, self.maxNumbersNeighbors]
+
+    def str(self):
+        result = ""
+        for subj, pred, obj in self:
+            result += "{0} {1} {2}.\n".format(subj, pred, obj)
+        return result
