@@ -1,19 +1,13 @@
 import rdflib
 
-
 class GraphSlicer:
     def __init__(self, graph):
         self.graph = graph
-        self.atomicGraphs = []
+        self.atomicGraphs = set()
         self.currentAtomicGraph = rdflib.Graph()
         self.nextNodeOther = []
         self.nextNodeBlank = []
         self.nextNodeCurrent = []
-
-    def isAtomic(self, rdfsubject, rdfobject):
-        if not (rdfsubject.n3()[:2] == "_:" or rdfobject.n3()[:2] == "_:"):
-            return True
-        return False
 
     def blankNodeAdding(self, node):
         if(node.n3()[:2] == "_:"):
@@ -22,9 +16,10 @@ class GraphSlicer:
             self.nextNodeOther.append(node)
 
     def atomic(self, statement, newNode):
-        if(self.isAtomic(statement[0], statement[2])):
-            self.atomicGraphs.append(rdflib.Graph())
-            self.atomicGraphs[-1].add(statement)
+        if(statement[newNode].n3()[:2] != "_:"):
+            newAtomicGraph = rdflib.Graph()
+            newAtomicGraph.add(statement)
+            self.atomicGraphs.add(newAtomicGraph)
             self.graph.remove(statement)
             self.nextNodeOther.append(statement[newNode])
         else:
@@ -52,7 +47,7 @@ class GraphSlicer:
             return self.nextNodeCurrent.pop()
         # if no further nodes are found the current atomic graph is done
         if(self.currentAtomicGraph):
-            self.atomicGraphs.append(self.currentAtomicGraph)
+            self.atomicGraphs.add(self.currentAtomicGraph)
             self.currentAtomicGraph = rdflib.Graph()
         if(self.nextNodeBlank):
             return self.nextNodeBlank.pop()
