@@ -1,11 +1,10 @@
 import rdflib
 from rdflib.compare import to_isomorphic
 
-
 class GraphSlicer:
     def __init__(self, graph):
         self.graph = graph
-        self.atomicGraphs = []
+        self.atomicGraphs = set()
         self.currentAtomicGraph = AtomicGraph()
         self.nextNodeOther = []
         self.nextNodeBlank = []
@@ -47,9 +46,10 @@ class GraphSlicer:
             self.nextNodeOther.append(node)
 
     def atomic(self, statement, newNode):
-        if(self.isAtomic(statement[0], statement[2])):
-            self.atomicGraphs.append(AtomicGraph())
-            self.atomicGraphs[-1].add(statement)
+        if(statement[newNode].n3()[:2] != "_:"):
+            newAtomicGraph = AtomicGraph()
+            newAtomicGraph.add(statement)
+            self.atomicGraphs.add(newAtomicGraph)
             self.graph.remove(statement)
             self.nextNodeOther.append(statement[newNode])
         else:
@@ -77,7 +77,7 @@ class GraphSlicer:
             return self.nextNodeCurrent.pop()
         # if no further nodes are found the current atomic graph is done
         if(self.currentAtomicGraph):
-            self.atomicGraphs.append(self.currentAtomicGraph)
+            self.atomicGraphs.add(self.currentAtomicGraph)
             self.currentAtomicGraph = AtomicGraph()
         if(self.nextNodeBlank):
             return self.nextNodeBlank.pop()
@@ -95,6 +95,7 @@ class GraphSlicer:
                 node = self.nextNode()
             # in case the graph has disconnected parts
             node = next(iter(self.graph.all_nodes()), False)
+        self.atomicGraphs = list(self.atomicGraphs)
         self.atomicGraphs.sort(key=lambda atomic: (atomic.getMeta()[0],
                                                    atomic.getMeta()[1]),
                                reverse=True)
