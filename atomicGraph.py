@@ -1,6 +1,7 @@
 import rdflib
 from rdflib.compare import to_isomorphic
 
+
 class GraphSlicer:
     def __init__(self, graph):
         self.graph = graph
@@ -9,14 +10,16 @@ class GraphSlicer:
         self.nextNodeOther = []
         self.nextNodeBlank = []
         self.nextNodeCurrent = []
+        self.sortedCache = []
 
     def __eq__(self, graph):
         numOfAGraphs = self.getNumberOfAtomicGraphs()
         if(numOfAGraphs == graph.getNumberOfAtomicGraphs()):
             index = 0
+            atomicGraphList = self.getSortedListAtomicGraphs()
             for i in range(0, numOfAGraphs):
                 # TODO  use index to cull the beginnig of otherGraphArray
-                if(not graph.inAtomicList(self.atomicGraphs[i], index,
+                if(not graph.inAtomicList(atomicGraphList[i], index,
                                           numOfAGraphs)):
                     return False
             # TODO this kind of comparison is only injective not bijective
@@ -25,8 +28,9 @@ class GraphSlicer:
 
     def inAtomicList(self, element, i, maxIndex):
         index = i
+        sortedAtomicGraphs = self.getSortedListAtomicGraphs()
         for index in range(i, maxIndex):
-            current = self.atomicGraphs[index]
+            current = sortedAtomicGraphs[index]
             # early returns
             if(current < element):
                 return False
@@ -95,13 +99,21 @@ class GraphSlicer:
                 node = self.nextNode()
             # in case the graph has disconnected parts
             node = next(iter(self.graph.all_nodes()), False)
-        self.atomicGraphs = list(self.atomicGraphs)
-        self.atomicGraphs.sort(key=lambda atomic: (atomic.getMeta()[0],
-                                                   atomic.getMeta()[1]),
-                               reverse=True)
 
     def getAtomicGraphs(self):
         return self.atomicGraphs
+
+    # https://wiki.python.org/moin/TimeComplexity lists list sorting as
+    # O(n log n)
+    def getSortedListAtomicGraphs(self):
+        if(self.sortedCache):
+            return self.sortedCache
+        else:
+            self.sortedCache = list(self.atomicGraphs)
+            self.sortedCache.sort(key=lambda atomic: (atomic.getMeta()[0],
+                                                      atomic.getMeta()[1]),
+                                  reverse=True)
+            return self.sortedCache
 
     def getNumberOfAtomicGraphs(self):
         return len(self.atomicGraphs)
