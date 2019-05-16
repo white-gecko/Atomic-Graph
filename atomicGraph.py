@@ -39,18 +39,19 @@ class GraphSlicer:
         return False
 
     def isAtomic(self, rdfsubject, rdfobject):
-        if not (rdfsubject.n3()[:2] == "_:" or rdfobject.n3()[:2] == "_:"):
+        if not (isinstance(rdfsubject, rdflib.BNode)
+                or isinstance(rdfobject, rdflib.BNode)):
             return True
         return False
 
     def blankNodeAdding(self, node):
-        if(node.n3()[:2] == "_:"):
+        if(isinstance(node, rdflib.BNode)):
             self.nextNodeCurrent.append(node)
         else:
             self.nextNodeOther.append(node)
 
     def atomic(self, statement, newNode):
-        if(statement[newNode].n3()[:2] != "_:"):
+        if(not isinstance(statement[newNode], rdflib.BNode)):
             newAtomicGraph = AtomicGraph()
             newAtomicGraph.add(statement)
             self.atomicGraphs.add(newAtomicGraph)
@@ -60,7 +61,7 @@ class GraphSlicer:
             self.nextNodeBlank.append(statement[newNode])
 
     def analyseNode(self, node):
-        if(node.n3()[:2] == "_:"):
+        if(isinstance(node, rdflib.BNode)):
             for tupel in iter(self.graph.predicate_objects(node)):
                 self.currentAtomicGraph.add((node, tupel[0], tupel[1]))
                 self.graph.remove((node, tupel[0], tupel[1]))
