@@ -1,0 +1,34 @@
+NAME DivideIntoAtomicGraphs
+INPUT g: Graph
+OUTPUT a: Set of Atomic Graphs, each given as a set of statements
+
+nodes = g.nodes
+statements = g.statements
+NeighborBNodes = {}
+nonTrivialGraph = {}
+While(nodes != {})
+  node = nodes.random()
+  While(node)
+    If(node is BNode)
+      NeighborBNodes.addBNodes(statements.connected_nodes(node))
+      nonTrivialGraph.addAll(node.statements)
+      statements.removeAll(node.statements)
+      nodes = nodes/{node}
+    Else
+      For statement in node.statements
+        If statement.is_trivial_atomic
+          a = a.union({statement})
+          statements = statements / {statement}
+        EndIf
+      EndFor
+      If(node.statements == {})
+        nodes = nodes / {node}
+      EndIf
+    EndIf
+    node = NeighborBNodes.pop()
+  EndWhile
+  a.union(nonTrivialGraph)
+  nonTrivialGraph = {}
+EndWhile
+
+return a
