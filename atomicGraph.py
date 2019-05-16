@@ -10,33 +10,12 @@ class GraphSlicer:
         self.nextNodeOther = []
         self.nextNodeBlank = []
         self.nextNodeCurrent = []
-        self.sortedCache = []
+        self.comparator = AtomicSetComparator(self)
 
-    def __eq__(self, graph):
-        numOfAGraphs = self.getNumberOfAtomicGraphs()
-        if(numOfAGraphs == graph.getNumberOfAtomicGraphs()):
-            index = 0
-            atomicGraphList = self.getSortedListAtomicGraphs()
-            for i in range(0, numOfAGraphs):
-                # TODO  use index to cull the beginnig of otherGraphArray
-                if(not graph.inAtomicList(atomicGraphList[i], index,
-                                          numOfAGraphs)):
-                    return False
-            # TODO this kind of comparison is only injective not bijective
-            return True
-        return False
-
-    def inAtomicList(self, element, i, maxIndex):
-        index = i
-        sortedAtomicGraphs = self.getSortedListAtomicGraphs()
-        for index in range(i, maxIndex):
-            current = sortedAtomicGraphs[index]
-            # early returns
-            if(current < element):
-                return False
-            if(element.equal(current)):
-                return True
-        return False
+    def __eq__(self, slicer):
+        if(not self.comparator):
+            self.comparator = AtomicSetComparator(self)
+        return self.comparator.compare(slicer)
 
     def isAtomic(self, rdfsubject, rdfobject):
         if not (isinstance(rdfsubject, rdflib.BNode)
@@ -104,20 +83,54 @@ class GraphSlicer:
     def getAtomicGraphs(self):
         return self.atomicGraphs
 
-    # https://wiki.python.org/moin/TimeComplexity lists list sorting as
-    # O(n log n)
-    def getSortedListAtomicGraphs(self):
-        if(self.sortedCache):
-            return self.sortedCache
-        else:
-            self.sortedCache = list(self.atomicGraphs)
-            self.sortedCache.sort(key=lambda atomic: (atomic.getMeta()[0],
-                                                      atomic.getMeta()[1]),
-                                  reverse=True)
-            return self.sortedCache
-
     def getNumberOfAtomicGraphs(self):
         return len(self.atomicGraphs)
+
+
+class AtomicSetComparator:
+    def __init__(self, slicer):
+        self.sortedGraphList = self.sortAtomicList(slicer.getAtomicGraphs())
+        self.matchNumber = slicer.getNumberOfAtomicGraphs()
+
+    def __bool__(self):
+        if self.sortedGraphList:
+            return True
+        else:
+            return False
+
+    # https://wiki.python.org/moin/TimeComplexity lists list sorting as
+    # O(n log n)
+    def sortAtomicList(self, atomicList):
+        sortList = list(atomicList)
+        sortList.sort(key=lambda atomic: (atomic.getMeta()[0],
+                                          atomic.getMeta()[1]),
+                      reverse=True)
+        return sortList
+
+    def compare(self, other_slicer):
+        if(self.matchNumber == other_slicer.getNumberOfAtomicGraphs()):
+            index = 0
+            otherGraphList = self.sortAtomicList(other_slicer.
+                                                 getAtomicGraphs())
+            for i in range(0, self.matchNumber):
+                # TODO  use index to cull the beginnig of otherGraphArray
+                if(not self.inAtomicList(self.sortedGraphList[i], index,
+                                         otherGraphList, self.matchNumber)):
+                    return False
+            # TODO this kind of comparison is only injective not bijective
+            return True
+        return False
+
+    def inAtomicList(self, element, i, sortedAtomicGraphs, maxIndex):
+        index = i
+        for index in range(i, maxIndex):
+            current = sortedAtomicGraphs[index]
+            # early returns
+            if(current < element):
+                return False
+            if(element.equal(current)):
+                return True
+        return False
 
 
 class AtomicGraph(rdflib.Graph):

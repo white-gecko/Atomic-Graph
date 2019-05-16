@@ -3,8 +3,8 @@ import atomicGraph
 
 g1 = rdflib.Graph()
 g2 = rdflib.Graph()
-graph1 = g1.parse("example.ttl", format="n3")
-graph2 = g2.parse("example.ttl", format="n3")
+graph1 = g1.parse("example1.ttl", format="n3")
+graph2 = g2.parse("example2.ttl", format="n3")
 
 slicer1 = atomicGraph.GraphSlicer(graph1)
 slicer1.run()
