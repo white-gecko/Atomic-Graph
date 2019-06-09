@@ -128,7 +128,7 @@ class AtomicSetComparator:
             # early returns
             if(current < element):
                 return False
-            if(element.equal(current)):
+            if(element == current):
                 return True
         return False
 
@@ -137,7 +137,10 @@ class AtomicGraph(rdflib.Graph):
     numberOfBNodes = 0
     maxNumbersNeighbors = 0
 
-    def equal(self, graph):
+    def __eq__(self, graph):
+
+        if(not issubclass(graph.__class__, AtomicGraph)):
+            return False
         result = False
         if(self.compareMeta(graph.getMeta())):
             # TODO this is only a place holder
@@ -147,6 +150,9 @@ class AtomicGraph(rdflib.Graph):
             iso2 = to_isomorphic(graph)
             result = iso1 == iso2
         return result
+
+    def __hash__(self):
+        return super(AtomicGraph, self).__hash__()
 
     def __ge__(self, graph):
         other_meta = graph.getMeta()
