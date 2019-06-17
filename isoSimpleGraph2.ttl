@@ -3,3 +3,4 @@ _:x <http://example.org/grounded> _:z .
 _:x <http://example.org/r> _:w .
 _:w <http://example.org/grounded> _:y .
 _:y <http://example.org/q> <http://example.org/grounded> .
+<http://example.org/grounded> <http://example.org/q> _:v .

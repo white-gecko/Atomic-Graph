@@ -72,7 +72,7 @@ class GraphIsoPartitioner:
             self.clr = clr
 
         def getColour(self):
-            if self.lenght == 0:
+            if len(self) == 0:
                 return None
             return self.clr[next(iter(self))]
 
@@ -83,6 +83,22 @@ class GraphIsoPartitioner:
                and self.getColour() < partition.getColour()
                ):
                 return True
+            return False
+
+    class PartiallyOrderedGraph:
+        def __init__(self, graph, clr, blanknodes):
+            self.graph = graph
+            self.clr = clr
+            self.blanknodes = blanknodes
+
+        def __lt__(self, other):
+            for bnode in iter(self.blanknodes):
+                smallerThenAll = True
+                for oBNode in iter(other.blanknodes):
+                    if(other.clr[oBNode] < self.clr[bnode]):
+                        smallerThenAll = False
+                if smallerThenAll:
+                    return True
             return False
 
     def createPartitions(self, clr, blanknodes):
@@ -106,11 +122,11 @@ class GraphIsoPartitioner:
                 return partition
 
     def generateMarker(self):
-        self.markerNr += 1
-        return self.markerNr.__str__()
+        # self.markerNr += 1
+        # return self.markerNr.__str__()
+        return "[@]"
 
     def canonicalise(self, graph):
-        self.lowestGraph = graph   # TODO remove: unnecessary but harmless
         clr = self.colour(graph)
         blanknodes = self.extractBlanknodes(graph)
         partitions = self.createPartitions(clr, blanknodes)
@@ -129,17 +145,55 @@ class GraphIsoPartitioner:
             clrExt = self.colour(graph, clr)
             bPart = self.refine(partitions, clrExt, bnode, blanknodes)
             if(len(bPart) == len(blanknodes)):
-                x = 5  #TODO remove
-                # TODO implement following
-                # graph_c = label(graph, clr)
-                #                                   #TODO implement <
-                # if lowestGraph is None or graph_c < lowestGraph:
-                #     lowestGraph = graph_c
+                graph_c = GraphIsoPartitioner.PartiallyOrderedGraph(graph, clr,
+                                                                    blanknodes)
+                if lowestGraph is None or graph_c < lowestGraph:
+                    lowestGraph = graph_c
             else:
                 lowestGraph = self.distinguish(graph, clrExt,
                                                bPart, blanknodes, lowestGraph)
         return lowestGraph
 
     def refine(self, partitions, clr, bnode, blanknodes):
-        # TODO implement
-        return
+        # find partition containing bnode
+        i = 0
+        while(not (bnode in partitions[i])):
+            i += 1
+        refinedPartition = []
+        # init refinedPartition
+        k = 0
+        while(k < i):
+            refinedPartition.append(partitions[k])
+            k += 1
+        # create Partition containing only the bnode
+        singleton = set()
+        singleton.add(bnode)
+        refinedPartition.append(singleton)
+        # init refinedPartition end
+        newPartitioning = self.createPartitions(clr, blanknodes)
+        # init (B_i \ {b}, B_{i+1}, ... , B_n)
+        iterategroup = []
+        iterategroup.append(partitions[i].copy())
+        iterategroup[0].remove(bnode)
+        i += 1
+        while(i < len(partitions)):
+            iterategroup.append(partitions[i])
+            i += 1
+        # init (B_i \ {b}, B_{i+1}, ... , B_n) end
+        for partition in iter(iterategroup):
+            partitionPlus = []
+            for newPartition in iter(newPartitioning):
+                if len(partition & newPartition) > 0:
+                    partitionPlus += (partition & newPartition)
+            refinedPartition += partitionPlus
+        return refinedPartition
+
+    # group nodes by their colour
+    # two graphs share the same colour group -> they are isomorph
+    def groupByColour(self, graph, clr):
+        colourGroup = {}
+        for node in iter(graph.all_nodes()):
+            if not clr[node] in colourGroup:
+                colourGroup[clr[node]] = set()
+            colourGroup[clr[node]].add(node)
+        return colourGroup
