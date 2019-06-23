@@ -35,8 +35,8 @@ def compareColourMap(graph1, colourMap1, graph2, colourMap2):
 
 g1 = rdflib.Graph()
 g2 = rdflib.Graph()
-graph1 = g1.parse("example1.ttl", format="n3")
-graph2 = g2.parse("example2.ttl", format="n3")
+graph1 = g1.parse("./Examples/example1.ttl", format="n3")
+graph2 = g2.parse("./Examples/example2.ttl", format="n3")
 slicer1 = atomicGraph.GraphSlicer(graph1)
 slicer1.run()
 slicer2 = atomicGraph.GraphSlicer(graph2)
@@ -46,8 +46,8 @@ print(slicer1 == slicer2)
 
 graphIso1 = rdflib.Graph()
 graphIso2 = rdflib.Graph()
-graphIso1 = graphIso1.parse("isoSimpleGraph1.ttl", format="n3")
-graphIso2 = graphIso2.parse("isoSimpleGraph2.ttl", format="n3")
+graphIso1 = graphIso1.parse("./Examples/isoSimpleGraph1.ttl", format="n3")
+graphIso2 = graphIso2.parse("./Examples/isoSimpleGraph2.ttl", format="n3")
 colouringAlgorithm = coloring.IsomorphicPartitioner()
 compareColourMap(graphIso1, colouringAlgorithm.canonicalise(graphIso1).clr,
                  graphIso2, colouringAlgorithm.canonicalise(graphIso2).clr)
