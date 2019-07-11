@@ -1,6 +1,0 @@
-_:a <http://example.org/q> <http://example.org/grounded> .
-_:c <http://example.org/grounded> _:a .
-_:c <http://example.org/r> _:d .
-_:d <http://example.org/grounded> _:b .
-_:b <http://example.org/q> <http://example.org/grounded> .
-<http://example.org/grounded> <http://example.org/q> _:e .

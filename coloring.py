@@ -195,6 +195,9 @@ class IsomorphicPartitioner:
         for partition in partitions:
             if(len(partition) > 1):
                 return partition
+        # return an empty set if nothing was found
+        # this causes the loop in __distinguish to stop
+        return set()
 
     def __generateMarker(self):
         return "[@]"

@@ -33,7 +33,6 @@ import __main__
 colouringAlgorithm = coloring.IsomorphicPartitioner()
 """
     __main__.graph = graph
-    print("-- parsing done --")
     res = (timeit.
            timeit(stmt="colouringAlgorithm.canonicalise(__main__.graph)",
                   setup=setup, number=1))
@@ -82,10 +81,17 @@ for arg in sys.argv:
     graphs.append(arg)
 
 if(testType == "colouring"):
-    g1 = rdflib.Graph()
-    g1 = g1.parse(graphs[0], format=RDFFormat[0])
-    benchmarkColouring(g1)
+    if RDFFormat[0] == "nquads":
+        g1 = rdflib.graph.ConjunctiveGraph()
+        g1.parse(graphs[0], format="nquads")
+        for context in iter(g1.contexts()):
+            benchmarkColouring(context)
+    else:
+        g1 = rdflib.Graph()
+        graph = g1.parse(graphs[0], format=RDFFormat[0])
+        benchmarkColouring(graph)
 else:
+    # TODO add context relevant changes like in the true body
     g1 = rdflib.Graph()
     g1 = g1.parse(graphs[0], format=RDFFormat[0])
     g2 = rdflib.Graph()

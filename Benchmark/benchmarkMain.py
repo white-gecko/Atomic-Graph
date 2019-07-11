@@ -12,7 +12,7 @@ subprocess.run(["python",
 
 subprocess.run(["python",
                 "benchmark_clean.py",
-                "../../AtomicGraph Files/08/data.nq-0",
+                "../../AtomicGraph Files/06/data.nq-0",
                 "-f",
                 "nquads",
                 "-t",
