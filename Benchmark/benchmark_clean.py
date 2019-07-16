@@ -58,6 +58,24 @@ import __main__
                             )
 
 
+def prepareGraphs(graphs, RDFFormat):
+    graphQueue = []
+    for i in range(0, len(graphs)):
+        if RDFFormat[i] == "nquads":
+            g1 = rdflib.graph.ConjunctiveGraph()
+            g1.parse(graphs[i], format="nquads")
+            for context in iter(g1.contexts()):
+                graphQueue.append(context)
+        elif RDFFormat[i] == "graph":
+            graph = graphconverter.convertGraphToRDF(graphs[i])
+            graphQueue.append(graph)
+        else:
+            g1 = rdflib.Graph()
+            graph = g1.parse(graphs[i], format=RDFFormat[i])
+            graphQueue.append(graph)
+    return graphQueue
+
+
 RDFFormat = []
 graphs = []
 testType = ""
@@ -82,22 +100,9 @@ for arg in sys.argv:
     graphs.append(arg)
 
 if(testType == "colouring"):
-    if RDFFormat[0] == "nquads":
-        g1 = rdflib.graph.ConjunctiveGraph()
-        g1.parse(graphs[0], format="nquads")
-        for context in iter(g1.contexts()):
-            benchmarkColouring(context)
-    elif RDFFormat[0] == "graph":
-        graph = graphconverter.convertGraphToRDF(graphs[0])
-        benchmarkColouring(graph)
-    else:
-        g1 = rdflib.Graph()
-        graph = g1.parse(graphs[0], format=RDFFormat[0])
+    for graph in prepareGraphs(graphs, RDFFormat):
         benchmarkColouring(graph)
 else:
-    # TODO add context relevant changes like in the true body
-    g1 = rdflib.Graph()
-    g1 = g1.parse(graphs[0], format=RDFFormat[0])
-    g2 = rdflib.Graph()
-    g2 = g2.parse(graphs[1], format=RDFFormat[1])
-    benchmarkIsomorphism(g1, g2)
+    graphs = prepareGraphs(graphs, RDFFormat)
+    for i in range(0, int(len(graphs)/2)):
+        benchmarkIsomorphism(graphs[i*2], graphs[i*2 + 1])
