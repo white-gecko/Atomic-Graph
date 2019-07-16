@@ -1,6 +1,7 @@
 import os
 import sys
 import inspect
+import graphconverter
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
@@ -86,6 +87,9 @@ if(testType == "colouring"):
         g1.parse(graphs[0], format="nquads")
         for context in iter(g1.contexts()):
             benchmarkColouring(context)
+    elif RDFFormat[0] == "graph":
+        graph = graphconverter.convertGraphToRDF(graphs[0])
+        benchmarkColouring(graph)
     else:
         g1 = rdflib.Graph()
         graph = g1.parse(graphs[0], format=RDFFormat[0])
