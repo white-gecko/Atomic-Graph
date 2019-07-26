@@ -3,7 +3,6 @@ import rdflib
 
 def convertGraphToRDF(fileName):
     graphFile = open(fileName, 'r')
-    print(fileName)
     graphFile.readline().split()
     bNodeHash = {}
     graph = rdflib.Graph()

@@ -120,6 +120,9 @@ class IsomorphicPartitioner:
                 lowestGraph = self.__distinguish(graph, clrExt,
                                                  bPart, blanknodes,
                                                  lowestGraph)
+        if(lowestGraph is None):
+            return (IsomorphicPartitioner().
+                    __PartiallyOrderedGraph(graph, clr, blanknodes))
         return lowestGraph
 
     def __refine(self, partitions, clr, bnode, blanknodes):
