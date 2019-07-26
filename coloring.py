@@ -1,18 +1,39 @@
 import rdflib
+import hashlib
 
 
 # check http://aidanhogan.com/docs/skolems_blank_nodes_www.pdf
 # for more information
 class IsomorphicPartitioner:
-    class __HashTupel:
-        def hashT(self, colour1, colour2):
-            return colour1 + colour2
+    class __HashCombiner:
+        # @credits https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java
+        def combine_ordered(self, code_array):
+            resultBytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            for code in iter(code_array):
+                for i in range(0, 16):
+                    resultBytes[i] = ((resultBytes[i] * 37) % 256) ^ code[i]
+            return bytes(resultBytes)
 
-    class __HashBag:
-        def hashB(self, colour1, colour2):
-            array = colour1.split("|") + colour2.split("|")
-            array.sort()     # the operation become commutative and associative
-            return "|".join(array)
+    class __HashTupel(__HashCombiner):
+        def hash(self, colour1, colour2):
+            return self.combine_ordered([colour1, colour2])
+
+    class __HashBag(__HashCombiner):
+        def __init__(self):
+            self.colourCodeLists = {}
+
+        def init_node(self, node):
+            self.colourCodeLists[node] = []
+
+        def add(self, node, colour):
+            self.colourCodeLists[node].append(hashlib.md5(colour).digest())
+
+        def trigger_hashing(self, colour):
+            for node, code_array in self.colourCodeLists.items():
+                code_array.append(colour[node])
+                code_array.sort()
+                colour[node] = self.combine_ordered(code_array)
+                code_array.clear()
 
     class __ColourPartion(set):
         def __init__(self, clr):
@@ -51,13 +72,18 @@ class IsomorphicPartitioner:
                     return True
             return False
 
+    def __init__(self):
+        self.__hash_type = hashlib.md5
+        self.__blank_hash = self.__hash_type("[]".encode('utf-8')).digest()
+        self.__marker_hash = self.__hash_type("[@]".encode('utf-8')).digest()
+        self.__hashBag = IsomorphicPartitioner.__HashBag()
+        self.__hashTupel = IsomorphicPartitioner.__HashTupel()
+
     def canonicalise(self, graph):
+        self.__hashBag.colourCodeLists.clear()
         clr = self.colour(graph)
         blanknodes = self.__extractBlanknodes(graph)
         partitions = self.__createPartitions(clr, blanknodes)
-        # not part of the offical algorithm, but we need it as marker generator
-        self.markerNr = -1
-        self.hashTupel = IsomorphicPartitioner().__HashTupel()
         return self.__distinguish(graph, clr, partitions, blanknodes)
 
     def colour(self, graph, colour=None):
@@ -65,29 +91,30 @@ class IsomorphicPartitioner:
             colour = {}
             for node in iter(graph.all_nodes()):
                 if isinstance(node, rdflib.BNode):
-                    colour[node] = "[]"
+                    self.__hashBag.init_node(node)
+                    colour[node] = self.__blank_hash
                 else:
-                    colour[node] = node.n3()
+                    colour[node] = self.__hash_type(node.n3()
+                                                    .encode('utf-8')).digest()
             # all terms need colour codes
             for predicate in graph.predicates():
-                colour[predicate] = predicate.n3()
-
+                colour[predicate] = self.__hash_type(predicate.n3()
+                                                     .encode('utf-8')).digest()
         colourPrevious = {}  # init so while condition does not fail
-        hashTupel = IsomorphicPartitioner().__HashTupel()
-        hashBag = IsomorphicPartitioner().__HashBag()
         equalityRelation = False
         while(not equalityRelation):
             colourPrevious = colour
             colour = colourPrevious.copy()
             for subj, pred, obje in graph:
                 if(isinstance(subj, rdflib.BNode)):
-                    c = hashTupel.hashT(colourPrevious[pred],
-                                        colourPrevious[obje])
-                    colour[subj] = hashBag.hashB(c, colour[subj])
+                    c = self.__hashTupel.hash(colourPrevious[pred],
+                                              colourPrevious[obje])
+                    self.__hashBag.add(subj, c)
                 elif(isinstance(obje, rdflib.BNode)):
-                    c = hashTupel.hashT(colourPrevious[subj],
-                                        colourPrevious[pred])
-                    colour[obje] = hashBag.hashB(c, colour[obje])
+                    c = self.__hashTupel.hash(colourPrevious[subj],
+                                              colourPrevious[pred])
+                    self.__hashBag.add(obje, c)
+            self.__hashBag.trigger_hashing(colour)
             equalityRelation = self.__checkEqualityRelation(colourPrevious,
                                                             colour)
         return colour
@@ -107,8 +134,8 @@ class IsomorphicPartitioner:
         sPart = self.__lowestNonTrivialPartition(partitions)
         for bnode in sPart:
             # should clr itself be changed or just a copy?
-            clr[bnode] = self.hashTupel.hashT(clr[bnode],
-                                              self.__generateMarker())
+            clr[bnode] = self.__hashTupel.hash(clr[bnode],
+                                               self.__generateMarker())
             clrExt = self.colour(graph, clr)
             bPart = self.__refine(partitions, clrExt, bnode, blanknodes)
             if(len(bPart) == len(blanknodes)):
@@ -203,4 +230,4 @@ class IsomorphicPartitioner:
         return set()
 
     def __generateMarker(self):
-        return "[@]"
+        return self.__marker_hash
