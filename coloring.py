@@ -100,9 +100,11 @@ class IsomorphicPartitioner:
             for predicate in graph.predicates():
                 colour[predicate] = self.__hash_type(predicate.n3()
                                                      .encode('utf-8')).digest()
-        colourPrevious = {}  # init so while condition does not fail
+        colourPrevious = colour.copy()  # init so while condition does not fail
+        colourPrePrevious = {}
         equalityRelation = False
         while(not equalityRelation):
+            colourPrePrevious = colourPrevious
             colourPrevious = colour
             colour = colourPrevious.copy()
             for subj, pred, obje in graph:
@@ -117,6 +119,10 @@ class IsomorphicPartitioner:
             self.__hashBag.trigger_hashing(colour)
             equalityRelation = self.__checkEqualityRelation(colourPrevious,
                                                             colour)
+            # check for simple cyclic changes
+            if(not equalityRelation):
+                equalityRelation = self.__checkEqualityRelation(colourPrePrevious,
+                                                                colour)
         return colour
 
     # group nodes by their colour
