@@ -1,5 +1,6 @@
 import rdflib
 import hashlib
+from sortedcontainers import SortedList
 
 
 # check http://aidanhogan.com/docs/skolems_blank_nodes_www.pdf
@@ -78,13 +79,15 @@ class IsomorphicPartitioner:
         self.__marker_hash = self.__hash_type("[@]".encode('utf-8')).digest()
         self.__hashBag = IsomorphicPartitioner.__HashBag()
         self.__hashTupel = IsomorphicPartitioner.__HashTupel()
+        self.__genericHashCombiner = self.__HashCombiner()
 
     def canonicalise(self, graph):
         self.__hashBag.colourCodeLists.clear()
         clr = self.colour(graph)
         blanknodes = self.__extractBlanknodes(graph)
         partitions = self.__createPartitions(clr, blanknodes)
-        return self.__distinguish(graph, clr, partitions, blanknodes)
+        result = self.__distinguish(graph, clr, partitions, blanknodes)
+        return result
 
     def colour(self, graph, colour=None):
         if colour is None:
@@ -101,12 +104,15 @@ class IsomorphicPartitioner:
                 colour[predicate] = self.__hash_type(predicate.n3()
                                                      .encode('utf-8')).digest()
         colourPrevious = colour.copy()  # init so while condition does not fail
-        colourPrePrevious = {}
         equalityRelation = False
+        changeHashCache = [self.__createColourGroupingHash(colour),
+                           hashlib.md5().digest(),
+                           hashlib.md5().digest()]
         while(not equalityRelation):
-            colourPrePrevious = colourPrevious
             colourPrevious = colour
             colour = colourPrevious.copy()
+            changeHashCache[2] = changeHashCache[1]
+            changeHashCache[1] = changeHashCache[0]
             for subj, pred, obje in graph:
                 if(isinstance(subj, rdflib.BNode)):
                     c = self.__hashTupel.hash(colourPrevious[pred],
@@ -117,20 +123,20 @@ class IsomorphicPartitioner:
                                               colourPrevious[pred])
                     self.__hashBag.add(obje, c)
             self.__hashBag.trigger_hashing(colour)
-            equalityRelation = self.__checkEqualityRelation(colourPrevious,
-                                                            colour)
-            # check for simple cyclic changes
-            if(not equalityRelation):
-                equalityRelation = self.__checkEqualityRelation(colourPrePrevious,
-                                                                colour)
+            changeHashCache[0] = self.__createColourGroupingHash(colour)
+            equalityRelation = (changeHashCache[0] == changeHashCache[1]
+                                or changeHashCache[0] == changeHashCache[2])
         return colour
 
     # group nodes by their colour
     # two graphs share the same colour group -> they are isomorph
     def groupByColour(self, graph, clr):
+        return self.__groupByColour(graph.all_nodes(), clr)
+
+    def __groupByColour(self, nodes, clr):
         colourGroup = {}
-        for node in iter(graph.all_nodes()):
-            if not clr[node] in colourGroup:
+        for node in iter(nodes):
+            if clr[node] not in colourGroup:
                 colourGroup[clr[node]] = set()
             colourGroup[clr[node]].add(node)
         return colourGroup
@@ -192,18 +198,17 @@ class IsomorphicPartitioner:
             refinedPartition += partitionPlus
         return refinedPartition
 
-    def __checkEqualityRelation(self, colourPrevious, colourNext):
-        for key1 in colourNext:
-            for key2 in colourNext:
-
-                # A<->B = A->B and B->A = -A or B and -B or A
-                if not ((colourPrevious[key1] != colourPrevious[key2]
-                         or colourNext[key1] == colourNext[key2])
-                        and (colourNext[key1] != colourNext[key2]
-                             or colourPrevious[key1] == colourPrevious[key2])
-                        ):
-                    return False
-        return True
+    def __createColourGroupingHash(self, blankToColour):
+        colourGroups = self.__groupByColour(blankToColour.keys(),
+                                            blankToColour)
+        hashList = SortedList()
+        for colour in colourGroups:
+            # the reinit is important -> don't use self.__hash_type
+            currentHash = hashlib.md5()
+            for blankNode in colourGroups[colour]:
+                currentHash.update(blankNode.encode('utf-8'))
+            hashList.add(currentHash.digest())
+        return self.__genericHashCombiner.combine_ordered(hashList)
 
     def __extractBlanknodes(self, graph):
         blanknodes = set()
