@@ -24,6 +24,9 @@ def test_colouring(graph_path, graph_format, collected_data,
 
 
 def collect_data(result, collected_data):
+    # TODO remove following 2
+    print(result.stdout.readline().decode('utf-8')[:-1])
+    print(result.stdout.readline().decode('utf-8')[:-1])
     time_bygone = str(result.stdout.readline(), 'utf-8').strip()
     print(time_bygone)
     collected_data[0] += float(time_bygone)
@@ -64,7 +67,7 @@ print("results: " + str(collected_data[0]/collected_data[1]))
 
 
 
-#subprocess.run(["python",
+# subprocess.run(["python",
 #                "benchmark_clean.py",
 #                "../Examples/example1.ttl",
 #                "-f",
