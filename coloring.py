@@ -1,6 +1,7 @@
 import rdflib
 import hashlib
 from sortedcontainers import SortedList
+from collections import defaultdict
 
 
 # check http://aidanhogan.com/docs/skolems_blank_nodes_www.pdf
@@ -219,17 +220,15 @@ class IsomorphicPartitioner:
 
     def __createPartitions(self, clr, blanknodes):
         orderedPartitions = []
+        madePartitions = defaultdict(lambda: False)
         for bnode in blanknodes:
             matchColour = clr[bnode]
-            foundPartition = None
-            for partition in orderedPartitions:
-                if(matchColour == partition.getColour()):
-                    foundPartition = partition
-            if foundPartition is None:
+            foundPartition = madePartitions[matchColour]
+            if not foundPartition:
                 foundPartition = IsomorphicPartitioner().__ColourPartion(clr)
+                madePartitions[matchColour] = foundPartition
                 orderedPartitions.append(foundPartition)
             foundPartition.add(bnode)
-
         return sorted(orderedPartitions)
 
     def __lowestNonTrivialPartition(self, partitions):
