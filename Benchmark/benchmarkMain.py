@@ -2,6 +2,7 @@ import subprocess
 import os
 import os.path
 import sys
+import __main__
 
 
 def test_colouring(graph_path, graph_format, collected_data,
@@ -19,22 +20,31 @@ def test_colouring(graph_path, graph_format, collected_data,
         "-t",
         "colouring"
     ], stdout=subprocess.PIPE)
-    result.wait()
-    collect_data(result, collected_data)
+    try:
+        result.wait(timeout=600)
+        collect_data(result, collected_data)
+    except subprocess.TimeoutExpired:
+        store_data("-600", collected_data)
 
 
 def collect_data(result, collected_data):
-    # TODO remove following 2
-    print(result.stdout.readline().decode('utf-8')[:-1])
-    print(result.stdout.readline().decode('utf-8')[:-1])
-    time_bygone = str(result.stdout.readline(), 'utf-8').strip()
-    print(time_bygone)
-    collected_data[0] += float(time_bygone)
-    collected_data[1] += 1
+    store_data(str(result.stdout.readline(), 'utf-8').strip(), collected_data)
     result.stdout.close()
     result.terminate()
 
 
+def store_data(data, collected_data):
+    output(str(data))
+    collected_data[0] += float(data)
+    collected_data[1] += 1
+
+
+def output(line):
+    __main__.outputFile.write("{} \n".format(line))
+    print(line)
+
+
+outputFile = open("BenchmarkResults.txt", "w")
 RDFFormat = []
 graphs = []
 testType = ""
@@ -60,49 +70,7 @@ for i in range(0, len(graphs)):
     for path, subdirs, files in os.walk(graphs[i]):
         sortedFiles = sorted(files, key=lambda key: int(key.split("-")[2]))
         for name in sortedFiles:
-            print("testing: " + os.path.join(path, name))
+            output("testing: " + os.path.join(path, name))
             test_colouring(os.path.join(path, name), RDFFormat[i],
                            collected_data)
 print("results: " + str(collected_data[0]/collected_data[1]))
-
-
-
-# subprocess.run(["python",
-#                "benchmark_clean.py",
-#                "../Examples/example1.ttl",
-#                "-f",
-#                "n3",
-#                "../Examples/example2.ttl",
-#                "-f",
-#                "n3",
-#                ])
-#
-#subprocess.run(["python",
-#                "benchmark_clean.py",
-#                "../../AtomicGraph Files/06/data.nq-0",
-#                "-f",
-#                "nquads",
-#                "-t",
-#                "colouring"
-#                ])
-#
-#subprocess.run(["time",
-#                "python",
-#                "benchmark_dirty.py",
-#                "../Examples/example1.ttl",
-#                "-f",
-#                "n3",
-#                "../Examples/example2.ttl",
-#                "-f",
-#                "n3"
-#                ])
-#
-#subprocess.run(["time",
-#                "python",
-#                "benchmark_dirty.py",
-#                "../Examples/example1.ttl",
-#                "-f",
-#                "n3",
-#                "-t",
-#                "colouring"
-#                ])

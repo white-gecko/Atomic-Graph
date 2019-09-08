@@ -1,0 +1,9 @@
+# using profiling
+python -m cProfile -o restats benchmark_clean.py /home/nime/Downloads/eval/grid-2/grid-2-100 -f graph -t colouring
+python
+>>>import pstats
+>>>p = pstats.Stats('restats')
+>>>p.sort_stats('time').print_stats()
+
+# output benchmark test
+python benchmarkMain.py /media/nime/INTENSO/projects/AtomicGraph\ Files/eval -f graph | tee BenchmarkResults.txt
