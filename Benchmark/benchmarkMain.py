@@ -68,9 +68,10 @@ for arg in sys.argv:
 
 for i in range(0, len(graphs)):
     for path, subdirs, files in os.walk(graphs[i]):
-        sortedFiles = sorted(files, key=lambda key: int(key.split("-")[2]))
+        sortedFiles = sorted(files, key=lambda key: int(key.split("-")[-1]))
         for name in sortedFiles:
             output("testing: " + os.path.join(path, name))
             test_colouring(os.path.join(path, name), RDFFormat[i],
                            collected_data)
-print("results: " + str(collected_data[0]/collected_data[1]))
+output("results: " + str(collected_data[0]/collected_data[1]))
+outputFile.close()
