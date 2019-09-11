@@ -1,5 +1,6 @@
 import rdflib
 import hashlib
+import queue
 from sortedcontainers import SortedList
 from collections import defaultdict
 
@@ -106,14 +107,10 @@ class IsomorphicPartitioner:
                                                      .encode('utf-8')).digest()
         colourPrevious = colour.copy()  # init so while condition does not fail
         equalityRelation = False
-        changeHashCache = [self.__createColourGroupingHash(colour),
-                           hashlib.md5().digest(),
-                           hashlib.md5().digest()]
+        changeHashCache = set()
         while(not equalityRelation):
             colourPrevious = colour
             colour = colourPrevious.copy()
-            changeHashCache[2] = changeHashCache[1]
-            changeHashCache[1] = changeHashCache[0]
             for subj, pred, obje in graph:
                 if(isinstance(subj, rdflib.BNode)):
                     c = self.__hashTupel.hash(colourPrevious[pred],
@@ -124,9 +121,9 @@ class IsomorphicPartitioner:
                                               colourPrevious[pred])
                     self.__hashBag.add(obje, c)
             self.__hashBag.trigger_hashing(colour)
-            changeHashCache[0] = self.__createColourGroupingHash(colour)
-            equalityRelation = (changeHashCache[0] == changeHashCache[1]
-                                or changeHashCache[0] == changeHashCache[2])
+            currentChangeHash = self.__createColourGroupingHash(colour)
+            equalityRelation = currentChangeHash in changeHashCache
+            changeHashCache.add(currentChangeHash)
         return colour
 
     # group nodes by their colour
