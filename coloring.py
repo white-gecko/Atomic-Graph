@@ -189,10 +189,10 @@ class IsomorphicPartitioner:
             i += 1
         # init (B_i \ {b}, B_{i+1}, ... , B_n) end
         for partition in iter(iterategroup):
-            partitionPlus = []
+            partitionPlus = IsomorphicPartitioner.__ColourPartion(self.__hash_type().digest())
             for newPartition in iter(newPartitioning):
                 if len(partition & newPartition) > 0:
-                    partitionPlus += (partition & newPartition)
+                    partitionPlus.update(partition & newPartition)
             refinedPartition += partitionPlus
         return refinedPartition
 
