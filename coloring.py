@@ -1,6 +1,5 @@
 import rdflib
 import hashlib
-import queue
 from sortedcontainers import SortedList
 from collections import defaultdict
 
@@ -59,6 +58,35 @@ class IsomorphicPartitioner:
                 return True
             return False
 
+        def __eq__(self, value):
+            return (self.getColour() == value.getColour())
+
+        def __ne__(self, value):
+            return not self.__eq__(value)
+
+        def __str__(self):
+            return "ColourPartion of {}".format(self.getColour())
+
+    class __ColourPartionList(list):
+        def __eq__(self, value):
+            if(len(self) == len(value)):
+                colourIterSelf = iter(self)
+                colourIterOther = iter(value)
+                for colourPartition0 in colourIterSelf:
+                    colourPartition1 = next(colourIterOther)
+                    if(colourPartition0 != colourPartition1):
+                        return False
+                return True
+            else:
+                return False
+
+        def __ne__(self, value):
+            return not self.__eq__(value)
+
+        def __str__(self):
+            template = "ColourPartionList: {}"
+            return template.format(", ".join(s.__str__() for s in self))
+
     class __PartiallyOrderedGraph:
         def __init__(self, graph, clr, blanknodes):
             self.graph = graph
@@ -66,12 +94,26 @@ class IsomorphicPartitioner:
             self.blanknodes = blanknodes
 
         def __lt__(self, other):
+            if self.blanknodes.issubset(other.blanknodes):
+                return True
+            # this is niche case that prevents the return of a falsy True
+            if other.blanknodes.issubset(self.blanknodes):
+                return False
+            # if e.g. the lowest colour belongs to all graphs
+            # the following will always return true
+            # --> its not a total ordering
+            skipList = set(self.clr.values()).intersection(set(other.clr.values()))
             for bnode in iter(self.blanknodes):
                 smallerThenAll = True
+                if(self.clr[bnode] in skipList):
+                    continue
                 for oBNode in iter(other.blanknodes):
+                    if(other.clr[oBNode] in skipList):
+                        continue
                     if(other.clr[oBNode] < self.clr[bnode]):
                         smallerThenAll = False
                 if smallerThenAll:
+
                     return True
             return False
 
@@ -83,6 +125,10 @@ class IsomorphicPartitioner:
         self.__hashTupel = IsomorphicPartitioner.__HashTupel()
         self.__genericHashCombiner = self.__HashCombiner()
 
+    def partitionIsomorphic(self, graph):
+        lowestGraph = self.canonicalise(graph)
+        return self.__createPartitions(lowestGraph.clr, lowestGraph.blanknodes)
+
     def canonicalise(self, graph):
         self.__hashBag.colourCodeLists.clear()
         clr = self.colour(graph)
@@ -90,6 +136,9 @@ class IsomorphicPartitioner:
         partitions = self.__createPartitions(clr, blanknodes)
         result = self.__distinguish(graph, clr, partitions, blanknodes)
         return result
+
+    def clear(self):
+        self.__hashBag.colourCodeLists.clear()
 
     def colour(self, graph, colour=None):
         if colour is None:
@@ -203,8 +252,15 @@ class IsomorphicPartitioner:
         for colour in colourGroups:
             # the reinit is important -> don't use self.__hash_type
             currentHash = hashlib.md5()
-            for blankNode in colourGroups[colour]:
-                currentHash.update(blankNode.encode('utf-8'))
+            # for blankNode in colourGroups[colour]:
+            #    currentHash.update(blankNode.encode('utf-8'))
+            # TODO *find a better hashing method
+            # the main requirement is the hashing is commutative
+            # (for now even accross different runs)
+            # *the code above depends on the order of blanknodes which changes
+            # from run to run
+            # *the code below is too collision prone
+            currentHash.update(str(len(colourGroups[colour])).encode('utf-8'))
             hashList.add(currentHash.digest())
         return self.__genericHashCombiner.combine_ordered(hashList)
 
@@ -216,7 +272,7 @@ class IsomorphicPartitioner:
         return blanknodes
 
     def __createPartitions(self, clr, blanknodes):
-        orderedPartitions = []
+        orderedPartitions = IsomorphicPartitioner.__ColourPartionList()
         madePartitions = defaultdict(lambda: False)
         for bnode in blanknodes:
             matchColour = clr[bnode]
@@ -226,7 +282,8 @@ class IsomorphicPartitioner:
                 madePartitions[matchColour] = foundPartition
                 orderedPartitions.append(foundPartition)
             foundPartition.add(bnode)
-        return sorted(orderedPartitions)
+        orderedPartitions.sort()
+        return orderedPartitions
 
     def __lowestNonTrivialPartition(self, partitions):
         for partition in partitions:
