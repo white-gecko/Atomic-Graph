@@ -7,116 +7,6 @@ from collections import defaultdict
 # check http://aidanhogan.com/docs/skolems_blank_nodes_www.pdf
 # for more information
 class IsomorphicPartitioner:
-    class __HashCombiner:
-        # @credits https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java
-        def combine_ordered(self, code_array):
-            resultBytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            for code in iter(code_array):
-                for i in range(0, 16):
-                    resultBytes[i] = ((resultBytes[i] * 37) % 256) ^ code[i]
-            return bytes(resultBytes)
-
-    class __HashTupel(__HashCombiner):
-        def hash(self, colour1, colour2):
-            return self.combine_ordered([colour1, colour2])
-
-    class __HashBag(__HashCombiner):
-        def __init__(self):
-            self.colourCodeLists = {}
-
-        def init_node(self, node):
-            self.colourCodeLists[node] = []
-
-        def add(self, node, colour):
-            self.colourCodeLists[node].append(hashlib.md5(colour).digest())
-
-        def trigger_hashing(self, colour):
-            for node, code_array in self.colourCodeLists.items():
-                code_array.append(colour[node])
-                code_array.sort()
-                colour[node] = self.combine_ordered(code_array)
-                code_array.clear()
-
-    class __ColourPartion(set):
-        def __init__(self, clr):
-            self.clr = clr
-
-        def setColourMap(self, clr):
-            self.clr = clr
-
-        def getColour(self):
-            if len(self) == 0:
-                return None
-            return self.clr[next(iter(self))]
-
-        def __lt__(self, partition):
-            if(len(self) < len(partition)):
-                return True
-            if(len(self) == len(partition)
-               and self.getColour() < partition.getColour()
-               ):
-                return True
-            return False
-
-        def __eq__(self, value):
-            return (self.getColour() == value.getColour())
-
-        def __ne__(self, value):
-            return not self.__eq__(value)
-
-        def __str__(self):
-            return "ColourPartion of {}".format(self.getColour())
-
-    class __ColourPartionList(list):
-        def __eq__(self, value):
-            if(len(self) == len(value)):
-                colourIterSelf = iter(self)
-                colourIterOther = iter(value)
-                for colourPartition0 in colourIterSelf:
-                    colourPartition1 = next(colourIterOther)
-                    if(colourPartition0 != colourPartition1):
-                        return False
-                return True
-            else:
-                return False
-
-        def __ne__(self, value):
-            return not self.__eq__(value)
-
-        def __str__(self):
-            template = "ColourPartionList: {}"
-            return template.format(", ".join(s.__str__() for s in self))
-
-    class __PartiallyOrderedGraph:
-        def __init__(self, graph, clr, blanknodes):
-            self.graph = graph
-            self.clr = clr
-            self.blanknodes = blanknodes
-
-        def __lt__(self, other):
-            if self.blanknodes.issubset(other.blanknodes):
-                return True
-            # this is niche case that prevents the return of a falsy True
-            if other.blanknodes.issubset(self.blanknodes):
-                return False
-            # if e.g. the lowest colour belongs to all graphs
-            # the following will always return true
-            # --> its not a total ordering
-            skipList = set(self.clr.values()).intersection(set(other.clr.values()))
-            for bnode in iter(self.blanknodes):
-                smallerThenAll = True
-                if(self.clr[bnode] in skipList):
-                    continue
-                for oBNode in iter(other.blanknodes):
-                    if(other.clr[oBNode] in skipList):
-                        continue
-                    if(other.clr[oBNode] < self.clr[bnode]):
-                        smallerThenAll = False
-                if smallerThenAll:
-
-                    return True
-            return False
-
     def __init__(self):
         self.__hash_type = hashlib.md5
         self.__blank_hash = self.__hash_type("[]".encode('utf-8')).digest()
@@ -238,7 +128,7 @@ class IsomorphicPartitioner:
             i += 1
         # init (B_i \ {b}, B_{i+1}, ... , B_n) end
         for partition in iter(iterategroup):
-            partitionPlus = IsomorphicPartitioner.__ColourPartion(self.__hash_type().digest())
+            partitionPlus = IsomorphicPartitioner.__ColourPartition(self.__hash_type().digest())
             for newPartition in iter(newPartitioning):
                 if len(partition & newPartition) > 0:
                     partitionPlus.update(partition & newPartition)
@@ -272,13 +162,13 @@ class IsomorphicPartitioner:
         return blanknodes
 
     def __createPartitions(self, clr, blanknodes):
-        orderedPartitions = IsomorphicPartitioner.__ColourPartionList()
+        orderedPartitions = IsomorphicPartitioner.__ColourPartitionList()
         madePartitions = defaultdict(lambda: False)
         for bnode in blanknodes:
             matchColour = clr[bnode]
             foundPartition = madePartitions[matchColour]
             if not foundPartition:
-                foundPartition = IsomorphicPartitioner().__ColourPartion(clr)
+                foundPartition = IsomorphicPartitioner().__ColourPartition(clr)
                 madePartitions[matchColour] = foundPartition
                 orderedPartitions.append(foundPartition)
             foundPartition.add(bnode)
@@ -295,3 +185,113 @@ class IsomorphicPartitioner:
 
     def __generateMarker(self):
         return self.__marker_hash
+
+    class __HashCombiner:
+        # @credits https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java
+        def combine_ordered(self, code_array):
+            resultBytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            for code in iter(code_array):
+                for i in range(0, 16):
+                    resultBytes[i] = ((resultBytes[i] * 37) % 256) ^ code[i]
+            return bytes(resultBytes)
+
+    class __HashTupel(__HashCombiner):
+        def hash(self, colour1, colour2):
+            return self.combine_ordered([colour1, colour2])
+
+    class __HashBag(__HashCombiner):
+        def __init__(self):
+            self.colourCodeLists = {}
+
+        def init_node(self, node):
+            self.colourCodeLists[node] = []
+
+        def add(self, node, colour):
+            self.colourCodeLists[node].append(hashlib.md5(colour).digest())
+
+        def trigger_hashing(self, colour):
+            for node, code_array in self.colourCodeLists.items():
+                code_array.append(colour[node])
+                code_array.sort()
+                colour[node] = self.combine_ordered(code_array)
+                code_array.clear()
+
+    class __ColourPartition(set):
+        def __init__(self, clr):
+            self.clr = clr
+
+        def setColourMap(self, clr):
+            self.clr = clr
+
+        def getColour(self):
+            if len(self) == 0:
+                return None
+            return self.clr[next(iter(self))]
+
+        def __lt__(self, partition):
+            if(len(self) < len(partition)):
+                return True
+            if(len(self) == len(partition)
+               and self.getColour() < partition.getColour()
+               ):
+                return True
+            return False
+
+        def __eq__(self, value):
+            return (self.getColour() == value.getColour())
+
+        def __ne__(self, value):
+            return not self.__eq__(value)
+
+        def __str__(self):
+            return "ColourPartition of {}".format(self.getColour())
+
+    class __ColourPartitionList(list):
+        def __eq__(self, value):
+            if(len(self) == len(value)):
+                colourIterSelf = iter(self)
+                colourIterOther = iter(value)
+                for colourPartition0 in colourIterSelf:
+                    colourPartition1 = next(colourIterOther)
+                    if(colourPartition0 != colourPartition1):
+                        return False
+                return True
+            else:
+                return False
+
+        def __ne__(self, value):
+            return not self.__eq__(value)
+
+        def __str__(self):
+            template = "ColourPartitionList: {}"
+            return template.format(", ".join(s.__str__() for s in self))
+
+    class __PartiallyOrderedGraph:
+        def __init__(self, graph, clr, blanknodes):
+            self.graph = graph
+            self.clr = clr
+            self.blanknodes = blanknodes
+
+        def __lt__(self, other):
+            if self.blanknodes.issubset(other.blanknodes):
+                return True
+            # this is niche case that prevents the return of a falsy True
+            if other.blanknodes.issubset(self.blanknodes):
+                return False
+            # if e.g. the lowest colour belongs to all graphs
+            # the following will always return true
+            # --> its not a total ordering
+            skipList = set(self.clr.values()).intersection(set(other.clr.values()))
+            for bnode in iter(self.blanknodes):
+                smallerThenAll = True
+                if(self.clr[bnode] in skipList):
+                    continue
+                for oBNode in iter(other.blanknodes):
+                    if(other.clr[oBNode] in skipList):
+                        continue
+                    if(other.clr[oBNode] < self.clr[bnode]):
+                        smallerThenAll = False
+                if smallerThenAll:
+
+                    return True
+            return False
