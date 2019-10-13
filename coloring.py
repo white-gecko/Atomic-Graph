@@ -16,21 +16,17 @@ class IsomorphicPartitioner:
         self.__genericHashCombiner = self.__HashCombiner()
 
     def partitionIsomorphic(self, graph):
-        lowestGraph = self.canonicalise(graph)
+        lowestGraph = self.__canonicalise(graph)
+        self.__hashBag.colourCodeLists.clear()
         return self.__createPartitions(lowestGraph.clr, lowestGraph.blanknodes)
 
-    def canonicalise(self, graph):
+    def partitionIsomorphicSimple(self, graph):
+        colour = self.__colour(graph)
         self.__hashBag.colourCodeLists.clear()
-        clr = self.colour(graph)
         blanknodes = self.__extractBlanknodes(graph)
-        partitions = self.__createPartitions(clr, blanknodes)
-        result = self.__distinguish(graph, clr, partitions, blanknodes)
-        return result
+        return self.__createPartitions(colour, blanknodes)
 
-    def clear(self):
-        self.__hashBag.colourCodeLists.clear()
-
-    def colour(self, graph, colour=None):
+    def __colour(self, graph, colour=None):
         if colour is None:
             colour = {}
             for node in iter(graph.all_nodes()):
@@ -65,10 +61,12 @@ class IsomorphicPartitioner:
             changeHashCache.add(currentChangeHash)
         return colour
 
-    # group nodes by their colour
-    # two graphs share the same colour group -> they are isomorph
-    def groupByColour(self, graph, clr):
-        return self.__groupByColour(graph.all_nodes(), clr)
+    def __canonicalise(self, graph):
+        clr = self.__colour(graph)
+        blanknodes = self.__extractBlanknodes(graph)
+        partitions = self.__createPartitions(clr, blanknodes)
+        result = self.__distinguish(graph, clr, partitions, blanknodes)
+        return result
 
     def __groupByColour(self, nodes, clr):
         colourGroup = {}
@@ -85,7 +83,7 @@ class IsomorphicPartitioner:
             # should clr itself be changed or just a copy?
             clr[bnode] = self.__hashTupel.hash(clr[bnode],
                                                self.__generateMarker())
-            clrExt = self.colour(graph, clr)
+            clrExt = self.__colour(graph, clr)
             bPart = self.__refine(partitions, clrExt, bnode, blanknodes)
             if(len(bPart) == len(blanknodes)):
                 graph_c = (IsomorphicPartitioner().
@@ -150,7 +148,7 @@ class IsomorphicPartitioner:
             # *the code above depends on the order of blanknodes which changes
             # from run to run
             # *the code below is too collision prone
-            currentHash.update(str(len(colourGroups[colour])).encode('utf-8'))
+            currentHash.update(len(colourGroups[colour]).to_bytes(16, 'big'))
             hashList.add(currentHash.digest())
         return self.__genericHashCombiner.combine_ordered(hashList)
 

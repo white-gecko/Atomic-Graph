@@ -18,4 +18,5 @@ def convertGraphToRDF(fileName):
             bNodeHash[tobject] = rdflib.BNode()
         tobject = bNodeHash[tobject]
         graph.add((tsubject, tpredicate, tobject))
+    graphFile.close()
     return graph
