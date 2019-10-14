@@ -3,12 +3,11 @@ import unittest
 import os
 import sys
 import inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(
+             inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 import coloring
-import atomicGraph
-from Benchmark import graphconverter
 
 
 class TestSimpleIsomorphism(unittest.TestCase):
@@ -22,6 +21,7 @@ class TestSimpleIsomorphism(unittest.TestCase):
         isoPartition0 = isoAlgorithm.partitionIsomorphicSimple(graph0)
         isoPartition1 = isoAlgorithm.partitionIsomorphicSimple(graph1)
         self.assertTrue(isoPartition0 == isoPartition1)
+
 
 if __name__ == '__main__':
     unittest.main()

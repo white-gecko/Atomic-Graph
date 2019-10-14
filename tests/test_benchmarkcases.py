@@ -1,13 +1,12 @@
-import rdflib
 import unittest
 import os
 import sys
 import inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(
+             inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 import coloring
-import atomicGraph
 from Benchmark import graphconverter
 
 
@@ -75,9 +74,11 @@ class TestBenchmarkCases(unittest.TestCase):
         if(error is not None):
             raise error
 
+
 class AlwaysFalse:
     def __eq__(self, value):
         return False
+
 
 if __name__ == '__main__':
     unittest.main()
