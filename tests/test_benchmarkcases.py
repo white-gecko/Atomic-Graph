@@ -54,7 +54,7 @@ class TestBenchmarkCases(unittest.TestCase):
             except AssertionError as e:
                 errorMsg = (errorPrefix
                             + currentName
-                            + " should not be isomorph to "
+                            + " should not be isomorphic to "
                             + previousName + "\n")
                 self.log.write(errorMsg)
                 # cache Exception to raise later
@@ -65,7 +65,7 @@ class TestBenchmarkCases(unittest.TestCase):
             except AssertionError as e:
                 errorMsg = (errorPrefix
                             + currentName
-                            + " should be isomorph to its self\n")
+                            + " should be isomorphic to its self\n")
                 self.log.write(errorMsg)
                 # cache Exception to raise later
                 error = e
