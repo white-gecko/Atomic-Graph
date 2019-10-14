@@ -44,7 +44,7 @@ class TestBenchmarkCases(unittest.TestCase):
         errorPrefix = "TestIsomorphism: "
         error = None
         otherList = iter(self.__class__.controlGroup)
-        otherPartition = TestIsomorphism.AlwaysFalse()
+        otherPartition = AlwaysFalse()
         testNames = iter(self.__class__.nameGroup)
         currentName = None
         for isoPartition in self.__class__.testGroup:
@@ -75,9 +75,9 @@ class TestBenchmarkCases(unittest.TestCase):
         if(error is not None):
             raise error
 
-    class AlwaysFalse:
-        def __eq__(self, value):
-            return False
+class AlwaysFalse:
+    def __eq__(self, value):
+        return False
 
 if __name__ == '__main__':
     unittest.main()
