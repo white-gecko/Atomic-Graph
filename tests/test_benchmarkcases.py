@@ -1,11 +1,7 @@
 import unittest
 import os
 import sys
-import inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(
-             inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir)
+import setSearchPath
 import coloring
 from Benchmark import graphconverter
 
@@ -16,9 +12,7 @@ class TestBenchmarkCases(unittest.TestCase):
         testGroup = []
         controlGroup = []
         nameGroup = []
-        file = open('TestFilePath', 'r')
-        testFilePath = file.readline().strip()
-        file.close()
+        testFilePath = cls.testPath
         for path, subdirs, files in os.walk(testFilePath):
             for file in files:
                 graph0 = graphconverter.convertGraphToRDF(os.path.join(path,
@@ -81,4 +75,5 @@ class AlwaysFalse:
 
 
 if __name__ == '__main__':
+    TestBenchmarkCases.testPath = sys.argv.pop()
     unittest.main()
