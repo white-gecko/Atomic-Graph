@@ -236,7 +236,7 @@ class IsomorphicPartitioner:
             return False
 
         def __eq__(self, value):
-            return (self.getColour() == value.getColour())
+            return (len(self) == len(value) and self.getColour() == value.getColour())
 
         def __ne__(self, value):
             return not self.__eq__(value)
@@ -262,7 +262,9 @@ class IsomorphicPartitioner:
 
         def __str__(self):
             template = "ColourPartitionList: {}"
-            return template.format(", ".join(s.__str__() for s in self))
+            return template.format(",  ".join(s.__str__()
+                                              + ": "
+                                              + str(len(s)) for s in self))
 
     class __PartiallyOrderedGraph:
         def __init__(self, graph, clr, blanknodes):
