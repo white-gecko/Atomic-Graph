@@ -1,12 +1,7 @@
-import os
 import sys
-import inspect
 import graphconverter
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir)
+import setSearchPath
 import rdflib
-import atomicGraph
 import coloring
 import timeit
 import __main__
@@ -14,17 +9,9 @@ import __main__
 
 def isomorph(graph1, graph2):
     colouringAlgorithm = coloring.IsomorphicPartitioner()
-    colourMap1 = colouringAlgorithm.canonicalise(graph1).clr
-    colourGroup1 = colouringAlgorithm.groupByColour(graph1, colourMap1)
-    colourMap2 = colouringAlgorithm.canonicalise(graph2).clr
-    colourGroup2 = colouringAlgorithm.groupByColour(graph2, colourMap2)
-    if len(colourGroup1) == len(colourGroup2):
-        for colour in colourGroup1:
-            if(not (colour in colourGroup2)):
-                return False
-    else:
-        return False
-    return True
+    colourPartitioning0 = colouringAlgorithm.partitionIsomorphic(graph1)
+    colourPartitioning1 = colouringAlgorithm.partitionIsomorphic(graph2)
+    return (colourPartitioning0 == colourPartitioning1)
 
 
 def benchmarkColouring(graph):
@@ -35,7 +22,7 @@ colouringAlgorithm = coloring.IsomorphicPartitioner()
 """
     __main__.graph = graph
     res = (timeit.
-           timeit(stmt="colouringAlgorithm.canonicalise(__main__.graph)",
+           timeit(stmt="colouringAlgorithm.partitionIsomorphic(__main__.graph)",
                   setup=setup, number=1))
     print(res)
 
