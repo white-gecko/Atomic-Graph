@@ -28,18 +28,7 @@ class IsomorphicPartitioner:
 
     def __colour(self, graph, colour=None):
         if colour is None:
-            colour = {}
-            for node in iter(graph.all_nodes()):
-                if isinstance(node, rdflib.BNode):
-                    self.__hashBag.init_node(node)
-                    colour[node] = self.__blank_hash
-                else:
-                    colour[node] = self.__hash_type(node.n3()
-                                                    .encode('utf-8')).digest()
-            # all terms need colour codes
-            for predicate in graph.predicates():
-                colour[predicate] = self.__hash_type(predicate.n3()
-                                                     .encode('utf-8')).digest()
+            colour = self.__initColour(graph)
         colourPrevious = colour.copy()  # init so while condition does not fail
         equalityRelation = False
         changeHashCache = set()
@@ -59,6 +48,21 @@ class IsomorphicPartitioner:
             currentChangeHash = self.__createColourGroupingHash(colour)
             equalityRelation = currentChangeHash in changeHashCache
             changeHashCache.add(currentChangeHash)
+        return colour
+
+    def __initColour(self, graph):
+        colour = {}
+        for node in iter(graph.all_nodes()):
+            if isinstance(node, rdflib.BNode):
+                self.__hashBag.init_node(node)
+                colour[node] = self.__blank_hash
+            else:
+                colour[node] = self.__hash_type(node.n3()
+                                                .encode('utf-8')).digest()
+        # all terms need colour codes
+        for predicate in graph.predicates():
+            colour[predicate] = self.__hash_type(predicate.n3()
+                                                 .encode('utf-8')).digest()
         return colour
 
     def __canonicalise(self, graph):
@@ -137,18 +141,11 @@ class IsomorphicPartitioner:
         colourGroups = self.__groupByColour(blankToColour.keys(),
                                             blankToColour)
         hashList = SortedList()
-        for colour in colourGroups:
+        for colour in sorted(colourGroups):
             # the reinit is important -> don't use self.__hash_type
             currentHash = hashlib.md5()
-            # for blankNode in colourGroups[colour]:
-            #    currentHash.update(blankNode.encode('utf-8'))
-            # TODO *find a better hashing method
-            # the main requirement is the hashing is commutative
-            # (for now even accross different runs)
-            # *the code above depends on the order of blanknodes which changes
-            # from run to run
-            # *the code below is too collision prone
-            currentHash.update(len(colourGroups[colour]).to_bytes(16, 'big'))
+            for blankNode in sorted(colourGroups[colour]):
+                currentHash.update(blankNode.encode('utf-8'))
             hashList.add(currentHash.digest())
         return self.__genericHashCombiner.combine_ordered(hashList)
 
