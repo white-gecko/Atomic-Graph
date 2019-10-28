@@ -263,6 +263,9 @@ class IsomorphicPartitioner:
                                               + ": "
                                               + str(len(s)) for s in self))
 
+        def __hash__(self):
+            return super(list, self).__hash__()
+
     class __PartiallyOrderedGraph:
         def __init__(self, graph, clr, blanknodes):
             self.graph = graph
