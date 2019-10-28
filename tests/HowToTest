@@ -1,0 +1,2 @@
+Use $python test_benchmarkcases.py <path/to/benchmark/cases>
+    $python test_simpleisomorphism.py

@@ -1,0 +1,363 @@
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-5 
+0.019376644000658416 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-10 
+0.10949427599916817 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-15 
+0.2738364319993707 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-20 
+0.6190030770012527 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-25 
+1.7115369040002406 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-30 
+2.2558591369997885 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-35 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-40 
+7.66806081499999 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-45 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-50 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-55 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-60 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-65 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-70 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-75 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-80 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-85 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-90 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-95 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-2/grid-2-100 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-2 
+0.006225687997357454 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-3 
+0.029520477997721173 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-4 
+0.20450007200270193 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-5 
+0.35535050999897067 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-6 
+1.4024131359983585 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-7 
+1.5625804449991847 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-8 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-9 
+4.1429060000009486 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-10 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-11 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-12 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-13 
+22.438335031998577 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-14 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-15 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-16 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-17 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-18 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/grid-3/grid-3-19 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-2 
+0.001057915000274079 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-3 
+0.0009692890016594902 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-4 
+0.0014549469997291453 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-5 
+0.0020871260021522176 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-6 
+0.002851857996574836 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-7 
+0.0037471889991138596 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-8 
+0.004587277002428891 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-9 
+0.005729975000576815 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-10 
+0.007339823998336215 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-11 
+0.008512134998454712 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-12 
+0.010280866001266986 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-13 
+0.03588612999737961 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-14 
+0.04251101599948015 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-15 
+0.04345153199756169 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-16 
+0.04549947800114751 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-17 
+0.05566238599931239 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-18 
+0.06601560399940354 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-19 
+0.08614280000256258 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-20 
+0.06488561500009382 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-21 
+0.07882853599949158 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-22 
+0.0981127099985315 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-23 
+0.09985769600098138 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-24 
+0.12499175799894147 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-25 
+0.11975218799852883 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-26 
+0.11823040499803028 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-27 
+0.13824571800068952 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-28 
+0.16307123200022033 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-29 
+0.16542101899904083 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-30 
+0.16958039499877486 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-31 
+0.18250800000168965 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-32 
+0.20735495400003856 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-33 
+0.21248054500028957 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-34 
+0.2593072300005588 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-35 
+0.2535139800020261 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-36 
+0.27736419700158876 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-37 
+0.2726154519987176 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-38 
+0.28360587499992107 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-39 
+0.28803845799848204 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-40 
+0.32165573600286734 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-41 
+0.3472366210007749 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-42 
+0.339755791999778 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-43 
+0.36680140099997516 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-44 
+0.36950303399862605 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-45 
+0.4121340929996222 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-46 
+0.39229847399838036 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-47 
+0.40458412199950544 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-48 
+0.46115977600129554 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-49 
+0.47613246100081597 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-50 
+0.4785333680010808 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-51 
+0.5159278620012628 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-52 
+0.6219957229986903 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-53 
+0.4927101670000411 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-54 
+0.5758012129990675 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-55 
+0.6106044139996811 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-56 
+0.6169715920004819 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-57 
+0.6542509190003329 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-58 
+0.6953909199983173 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-59 
+0.697253020000062 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-60 
+0.7245948089985177 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-61 
+0.724074716999894 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-62 
+0.7605843509991246 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-63 
+0.7558305759994255 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-64 
+0.8077101369999582 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-65 
+0.8935631489985099 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-66 
+0.8803707109982497 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-67 
+0.9234505429994897 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-68 
+0.8604333990006126 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-69 
+0.9537781990002259 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-70 
+0.9690157060031197 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-71 
+1.0628857589981635 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-72 
+1.0383330320000823 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-73 
+1.0565646559989545 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-74 
+1.1069559520001349 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-75 
+1.136369283998647 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-76 
+1.110594662000949 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-77 
+1.1922065790022316 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-78 
+1.2033116659986263 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-79 
+1.2400811599982262 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-80 
+1.271516315999179 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-81 
+1.3155178009983501 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-82 
+1.3450763229993754 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-83 
+1.3810950509978284 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-84 
+1.4275922119995812 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-85 
+1.455551220999041 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-86 
+1.5361344759985514 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-87 
+1.486104998002702 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-88 
+1.5413900800012925 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-89 
+1.5771683499988285 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-90 
+1.6311296400017454 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-91 
+1.6615908899984788 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-92 
+1.692163741998229 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-93 
+1.7628778969992709 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-94 
+1.7824608859991713 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-95 
+1.8024718449996726 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-96 
+2.191728410001815 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-97 
+1.91421632300262 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-98 
+2.0522598450006626 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-99 
+1.981607467001595 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/k/k-100 
+2.0045297110009415 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-4 
+0.043870189001609106 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-5 
+0.13841032600248582 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-6 
+0.22614442000121926 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-7 
+0.3104925990010088 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-8 
+0.5151067059996421 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-9 
+0.6888055979979981 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-10 
+0.8783465209999122 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-11 
+1.430237724998733 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-12 
+1.8183189529991068 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-13 
+2.321468433998234 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-14 
+2.927300927000033 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-15 
+3.2878029599996808 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-16 
+4.338143098000728 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-17 
+5.4309904129986535 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-18 
+6.3897736969993275 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-19 
+6.782949640000879 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-20 
+8.766697044000466 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-21 
+9.77372047300014 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-22 
+11.792470157997741 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-23 
+13.029489350999938 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-24 
+16.395681439000327 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-25 
+17.451636619000055 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-26 
+19.378081798000494 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-27 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-28 
+24.9888975770009 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-29 
+37.58674409199739 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/lattice/lattice-30 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-2 
+0.24681210199923953 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-4 
+1.3656097450002562 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-6 
+1.7868908099990222 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-8 
+4.871163325999078 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-10 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-12 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-14 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-16 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-18 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-20 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-22 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-24 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-26 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-28 
+53.742258064005 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-30 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-32 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-34 
+-600 
+testing: /media/nime/INTENSO/projects/AtomicGraph Files/eval/mz/mz-36 
