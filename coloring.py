@@ -15,20 +15,9 @@ class IsomorphicPartitioner:
         self.__hashTupel = IsomorphicPartitioner.__HashTupel()
         self.__genericHashCombiner = self.__HashCombiner()
 
-    def partitionIsomorphic(self, graph):
-        lowestGraph = self.__canonicalise(graph)
-        self.__hashBag.colourCodeLists.clear()
-        return self.__createPartitions(lowestGraph.clr, lowestGraph.blanknodes)
-
-    def partitionIsomorphicSimple(self, graph):
-        colour = self.__colour(graph)
-        self.__hashBag.colourCodeLists.clear()
-        blanknodes = self.__extractBlanknodes(graph)
-        return self.__createPartitions(colour, blanknodes)
-
-    def __colour(self, graph, colour=None):
+    def _colour(self, graph, colour=None):
         if colour is None:
-            colour = self.__initColour(graph)
+            colour = self._init_colour(graph)
         colourPrevious = colour.copy()  # init so while condition does not fail
         equalityRelation = False
         changeHashCache = set()
@@ -45,12 +34,12 @@ class IsomorphicPartitioner:
                                               colourPrevious[pred])
                     self.__hashBag.add(obje, c)
             self.__hashBag.trigger_hashing(colour)
-            currentChangeHash = self.__createColourGroupingHash(colour)
+            currentChangeHash = self._create_colour_grouping_hash(colour)
             equalityRelation = currentChangeHash in changeHashCache
             changeHashCache.add(currentChangeHash)
         return colour
 
-    def __initColour(self, graph):
+    def _init_colour(self, graph):
         colour = {}
         for node in iter(graph.all_nodes()):
             if isinstance(node, rdflib.BNode):
@@ -65,14 +54,14 @@ class IsomorphicPartitioner:
                                                  .encode('utf-8')).digest()
         return colour
 
-    def __canonicalise(self, graph):
-        clr = self.__colour(graph)
-        blanknodes = self.__extractBlanknodes(graph)
-        partitions = self.__createPartitions(clr, blanknodes)
-        result = self.__distinguish(graph, clr, partitions, blanknodes)
+    def _canonicalise(self, graph):
+        clr = self._colour(graph)
+        blanknodes = self._extract_blanknodes(graph)
+        partitions = self._create_partitions(clr, blanknodes)
+        result = self._distinguish(graph, clr, partitions, blanknodes)
         return result
 
-    def __groupByColour(self, nodes, clr):
+    def _group_by_colour(self, nodes, clr):
         colourGroup = {}
         for node in iter(nodes):
             if clr[node] not in colourGroup:
@@ -80,30 +69,30 @@ class IsomorphicPartitioner:
             colourGroup[clr[node]].add(node)
         return colourGroup
 
-    def __distinguish(self, graph, clr,
-                      partitions, blanknodes, lowestGraph=None):
-        sPart = self.__lowestNonTrivialPartition(partitions)
+    def _distinguish(self, graph, clr,
+                     partitions, blanknodes, lowestGraph=None):
+        sPart = self._lowest_non_trivial_partition(partitions)
         for bnode in sPart:
             # should clr itself be changed or just a copy?
             clr[bnode] = self.__hashTupel.hash(clr[bnode],
-                                               self.__generateMarker())
-            clrExt = self.__colour(graph, clr)
-            bPart = self.__refine(partitions, clrExt, bnode, blanknodes)
+                                               self._generate_marker())
+            clrExt = self._colour(graph, clr)
+            bPart = self._refine(partitions, clrExt, bnode, blanknodes)
             if(len(bPart) == len(blanknodes)):
                 graph_c = (IsomorphicPartitioner().
                            __PartiallyOrderedGraph(graph, clr, blanknodes))
                 if lowestGraph is None or graph_c < lowestGraph:
                     lowestGraph = graph_c
             else:
-                lowestGraph = self.__distinguish(graph, clrExt,
-                                                 bPart, blanknodes,
-                                                 lowestGraph)
+                lowestGraph = self._distinguish(graph, clrExt,
+                                                bPart, blanknodes,
+                                                lowestGraph)
         if(lowestGraph is None):
             return (IsomorphicPartitioner().
                     __PartiallyOrderedGraph(graph, clr, blanknodes))
         return lowestGraph
 
-    def __refine(self, partitions, clr, bnode, blanknodes):
+    def _refine(self, partitions, clr, bnode, blanknodes):
         # find partition containing bnode
         i = 0
         while(not (bnode in partitions[i])):
@@ -119,7 +108,7 @@ class IsomorphicPartitioner:
         singleton.add(bnode)
         refinedPartition.append(singleton)
         # init refinedPartition end
-        newPartitioning = self.__createPartitions(clr, blanknodes)
+        newPartitioning = self._create_partitions(clr, blanknodes)
         # init (B_i \ {b}, B_{i+1}, ... , B_n)
         iterategroup = []
         iterategroup.append(partitions[i].copy())
@@ -137,9 +126,9 @@ class IsomorphicPartitioner:
             refinedPartition += partitionPlus
         return refinedPartition
 
-    def __createColourGroupingHash(self, blankToColour):
-        colourGroups = self.__groupByColour(blankToColour.keys(),
-                                            blankToColour)
+    def _create_colour_grouping_hash(self, blankToColour):
+        colourGroups = self._group_by_colour(blankToColour.keys(),
+                                             blankToColour)
         hashList = SortedList()
         for colour in sorted(colourGroups):
             # the reinit is important -> don't use self.__hash_type
@@ -149,14 +138,14 @@ class IsomorphicPartitioner:
             hashList.add(currentHash.digest())
         return self.__genericHashCombiner.combine_ordered(hashList)
 
-    def __extractBlanknodes(self, graph):
+    def _extract_blanknodes(self, graph):
         blanknodes = set()
         for node in iter(graph.all_nodes()):
             if isinstance(node, rdflib.BNode):
                 blanknodes.add(node)
         return blanknodes
 
-    def __createPartitions(self, clr, blanknodes):
+    def _create_partitions(self, clr, blanknodes):
         orderedPartitions = ColourPartitionList(clr)
         madePartitions = defaultdict(lambda: False)
         for bnode in blanknodes:
@@ -170,16 +159,27 @@ class IsomorphicPartitioner:
         orderedPartitions.sort()
         return orderedPartitions
 
-    def __lowestNonTrivialPartition(self, partitions):
+    def _lowest_non_trivial_partition(self, partitions):
         for partition in partitions:
             if(len(partition) > 1):
                 return partition
         # return an empty set if nothing was found
-        # this causes the loop in __distinguish to stop
+        # this causes the loop in _distinguish to stop
         return set()
 
-    def __generateMarker(self):
+    def _generate_marker(self):
         return self.__marker_hash
+
+    def partitionIsomorphic(self, graph):
+        lowestGraph = self._canonicalise(graph)
+        self.__hashBag.colourCodeLists.clear()
+        return self._create_partitions(lowestGraph.clr, lowestGraph.blanknodes)
+
+    def partitionIsomorphicSimple(self, graph):
+        colour = self._colour(graph)
+        self.__hashBag.colourCodeLists.clear()
+        blanknodes = self._extract_blanknodes(graph)
+        return self._create_partitions(colour, blanknodes)
 
     class __HashCombiner:
         # @credits https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java
@@ -215,40 +215,38 @@ class IsomorphicPartitioner:
         def __init__(self, clr):
             self.clr = clr
 
-        def setColourMap(self, clr):
-            self.clr = clr
-
-        def getColour(self):
-            if len(self) == 0:
-                return None
-            return self.clr[next(iter(self))]
-
         def __lt__(self, partition):
             if(len(self) < len(partition)):
                 return True
-            if(len(self) == len(partition)
-               and self.getColour() < partition.getColour()
-               ):
+            if(len(self) == len(partition) and self.get_colour() < partition.get_colour()):
                 return True
             return False
 
         def __eq__(self, value):
-            return (len(self) == len(value) and self.getColour() == value.getColour())
+            return (len(self) == len(value) and self.get_colour() == value.get_colour())
 
         def __ne__(self, value):
             return not self.__eq__(value)
 
         def __str__(self):
-            return "ColourPartition of {}".format(self.getColour())
+            return "ColourPartition of {}".format(self.get_colour())
 
         def __hash__(self):
-            return int.from_bytes(self._getHashCode(), byteorder='big')
+            return int.from_bytes(self.get_hash_code(), byteorder='big')
 
-        def _getHashCode(self):
+        def get_hash_code(self):
             hash = hashlib.md5()
-            hash.update(self.getColour())
+            hash.update(self.get_colour())
             hash.update(len(self).to_bytes(16, 'big'))
             return hash.digest()
+
+        def set_colour_map(self, clr):
+            self.clr = clr
+
+        def get_colour(self):
+            if len(self) == 0:
+                return None
+            return self.clr[next(iter(self))]
 
     class __PartiallyOrderedGraph:
         def __init__(self, graph, clr, blanknodes):
@@ -302,22 +300,21 @@ class ColourPartitionList(list):
         return template.format(",  ".join(s.__str__() + ": " + str(len(s)) for s in self))
 
     def __hash__(self):
-        return int.from_bytes(self._getHashCode(), byteorder='big')
+        return int.from_bytes(self.get_hash_code(), byteorder='big')
 
-    def _getHashCode(self):
-        if self._unhashed:
-            # no need to order, its supposed to be already ordered when created
-            sortedHashes = []
-            for colourPartition in self:
-                sortedHashes.append(colourPartition._getHashCode())
-            self.hash = self._combine_ordered(sortedHashes)
-            self._unhashed = False
-        return self.hash
-
-    # @credits https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java
     def _combine_ordered(self, code_array):
         resultBytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         for code in iter(code_array):
             for i in range(0, 16):
                 resultBytes[i] = ((resultBytes[i] * 37) % 256) ^ code[i]
         return bytes(resultBytes)
+
+    def get_hash_code(self):
+        if self._unhashed:
+            # no need to order, its supposed to be already ordered when created
+            sortedHashes = []
+            for colourPartition in self:
+                sortedHashes.append(colourPartition.get_hash_code())
+            self.hash = self._combine_ordered(sortedHashes)
+            self._unhashed = False
+        return self.hash

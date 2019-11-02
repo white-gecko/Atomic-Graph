@@ -1,12 +1,12 @@
 import rdflib
-import atomicGraph
+import atomic_graph
 import coloring
 
 
 class ComparableGraph(rdflib.Graph):
     def __init__(self, graph):
         super()
-        slicer = atomicGraph.GraphSlicer(graph)
+        slicer = atomic_graph.GraphSlicer(graph)
         slicer.run()
         self.atomicGraphs = set()
         partitioner = coloring.IsomorphicPartitioner()

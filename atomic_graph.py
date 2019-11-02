@@ -17,19 +17,18 @@ class GraphSlicer:
             self.comparator = AtomicSetComparator(self)
         return self.comparator.compare(slicer)
 
-    def isAtomic(self, rdfsubject, rdfobject):
-        if not (isinstance(rdfsubject, rdflib.BNode)
-                or isinstance(rdfobject, rdflib.BNode)):
+    def _is_atomic(self, rdfsubject, rdfobject):
+        if not (isinstance(rdfsubject, rdflib.BNode) or isinstance(rdfobject, rdflib.BNode)):
             return True
         return False
 
-    def blankNodeAdding(self, node):
+    def _blank_node_adding(self, node):
         if(isinstance(node, rdflib.BNode)):
             self.nextNodeCurrent.append(node)
         else:
             self.nextNodeOther.append(node)
 
-    def atomic(self, statement, newNode):
+    def _atomic(self, statement, newNode):
         if(not isinstance(statement[newNode], rdflib.BNode)):
             newAtomicGraph = AtomicGraph()
             newAtomicGraph.add(statement)
@@ -39,24 +38,24 @@ class GraphSlicer:
         else:
             self.nextNodeBlank.append(statement[newNode])
 
-    def analyseNode(self, node):
+    def _analyse_node(self, node):
         if(isinstance(node, rdflib.BNode)):
             for tupel in iter(self.graph.predicate_objects(node)):
                 self.currentAtomicGraph.add((node, tupel[0], tupel[1]))
                 self.graph.remove((node, tupel[0], tupel[1]))
-                self.blankNodeAdding(tupel[1])
+                self._blank_node_adding(tupel[1])
             for tupel in iter(self.graph.subject_predicates(node)):
                 self.currentAtomicGraph.add((tupel[0], tupel[1], node))
                 self.graph.remove((tupel[0], tupel[1], node))
-                self.blankNodeAdding(tupel[0])
+                self._blank_node_adding(tupel[0])
         else:
             for tupel in iter(self.graph.predicate_objects(node)):
-                self.atomic((node, tupel[0], tupel[1]), 2)
+                self._atomic((node, tupel[0], tupel[1]), 2)
 
             for tupel in iter(self.graph.subject_predicates(node)):
-                self.atomic((tupel[0], tupel[1], node), 0)
+                self._atomic((tupel[0], tupel[1], node), 0)
 
-    def nextNode(self):
+    def _next_node(self):
         if(self.nextNodeCurrent):
             return self.nextNodeCurrent.pop()
         # if no further nodes are found the current atomic graph is done
@@ -72,11 +71,11 @@ class GraphSlicer:
     def run(self):
         node = next(iter(self.graph.all_nodes()), False)
         while(node):
-            self.analyseNode(node)
-            node = self.nextNode()
+            self._analyse_node(node)
+            node = self._next_node()
             while(node):  # empty lists are falsy
-                self.analyseNode(node)
-                node = self.nextNode()
+                self._analyse_node(node)
+                node = self._next_node()
             # in case the graph has disconnected parts
             node = next(iter(self.graph.all_nodes()), False)
 
@@ -89,7 +88,7 @@ class GraphSlicer:
 
 class AtomicSetComparator:
     def __init__(self, slicer):
-        self.sortedGraphList = self.sortAtomicList(slicer.getAtomicGraphs())
+        self.sortedGraphList = self._sort_atomic_list(slicer.getAtomicGraphs())
         self.matchNumber = slicer.getNumberOfAtomicGraphs()
 
     def __bool__(self):
@@ -100,28 +99,14 @@ class AtomicSetComparator:
 
     # https://wiki.python.org/moin/TimeComplexity lists list sorting as
     # O(n log n)
-    def sortAtomicList(self, atomicList):
+    def _sort_atomic_list(self, atomicList):
         sortList = list(atomicList)
-        sortList.sort(key=lambda atomic: (atomic.getMeta()[0],
-                                          atomic.getMeta()[1]),
+        sortList.sort(key=lambda atomic: (atomic.get_meta()[0],
+                                          atomic.get_meta()[1]),
                       reverse=True)
         return sortList
 
-    def compare(self, other_slicer):
-        if(self.matchNumber == other_slicer.getNumberOfAtomicGraphs()):
-            index = 0
-            otherGraphList = self.sortAtomicList(other_slicer.
-                                                 getAtomicGraphs())
-            for i in range(0, self.matchNumber):
-                # TODO  use index to cull the beginnig of otherGraphArray
-                if(not self.inAtomicList(self.sortedGraphList[i], index,
-                                         otherGraphList, self.matchNumber)):
-                    return False
-            # TODO this kind of comparison is only injective not bijective
-            return True
-        return False
-
-    def inAtomicList(self, element, i, sortedAtomicGraphs, maxIndex):
+    def _in_atomic_list(self, element, i, sortedAtomicGraphs, maxIndex):
         index = i
         for index in range(i, maxIndex):
             current = sortedAtomicGraphs[index]
@@ -132,17 +117,30 @@ class AtomicSetComparator:
                 return True
         return False
 
+    def compare(self, other_slicer):
+        if(self.matchNumber == other_slicer.getNumberOfAtomicGraphs()):
+            index = 0
+            otherGraphList = self._sort_atomic_list(other_slicer.
+                                                    getAtomicGraphs())
+            for i in range(0, self.matchNumber):
+                # TODO  use index to cull the beginnig of otherGraphArray
+                if(not self._in_atomic_list(self.sortedGraphList[i], index,
+                                            otherGraphList, self.matchNumber)):
+                    return False
+            # TODO this kind of comparison is only injective not bijective
+            return True
+        return False
+
 
 class AtomicGraph(rdflib.Graph):
     numberOfBNodes = 0
     maxNumbersNeighbors = 0
 
     def __eq__(self, graph):
-
         if(not issubclass(graph.__class__, AtomicGraph)):
             return False
         result = False
-        if(self.compareMeta(graph.getMeta())):
+        if(self.compare_meta(graph.get_meta())):
             # TODO this is only a place holder
             # the point was to use a better version of comparision then
             # standard rdflib isomorphism
@@ -155,7 +153,7 @@ class AtomicGraph(rdflib.Graph):
         return super(AtomicGraph, self).__hash__()
 
     def __ge__(self, graph):
-        other_meta = graph.getMeta()
+        other_meta = graph.get_meta()
         if(self.numberOfBNodes > other_meta[0] or (
             self.numberOfBNodes == other_meta[0] and (
                 self.maxNumbersNeighbors >= other_meta[1]))):
@@ -163,22 +161,22 @@ class AtomicGraph(rdflib.Graph):
         return False
 
     def __lt__(self, graph):
-        other_meta = graph.getMeta()
+        other_meta = graph.get_meta()
         if(self.numberOfBNodes < other_meta[0] or (
             self.numberOfBNodes == other_meta[0] and (
                 self.maxNumbersNeighbors < other_meta[1]))):
             return True
         return False
 
-    def compareMeta(self, metaArray):
-        return ((self.numberOfBNodes == metaArray[0]) and(
-            self.maxNumbersNeighbors == metaArray[1]))
-
-    def getMeta(self):
-        return [self.numberOfBNodes, self.maxNumbersNeighbors]
-
     def __str__(self):
         result = ""
         for subj, pred, obj in self:
             result += "{0} {1} {2}.\n".format(subj, pred, obj)
         return result
+
+    def compare_meta(self, metaArray):
+        return ((self.numberOfBNodes == metaArray[0]) and(
+            self.maxNumbersNeighbors == metaArray[1]))
+
+    def get_meta(self):
+        return [self.numberOfBNodes, self.maxNumbersNeighbors]
