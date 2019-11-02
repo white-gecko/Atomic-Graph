@@ -157,7 +157,7 @@ class IsomorphicPartitioner:
         return blanknodes
 
     def __createPartitions(self, clr, blanknodes):
-        orderedPartitions = IsomorphicPartitioner.__ColourPartitionList()
+        orderedPartitions = ColourPartitionList(clr)
         madePartitions = defaultdict(lambda: False)
         for bnode in blanknodes:
             matchColour = clr[bnode]
@@ -250,44 +250,6 @@ class IsomorphicPartitioner:
             hash.update(len(self).to_bytes(16, 'big'))
             return hash.digest()
 
-    class __ColourPartitionList(list):
-        def __init__(self):
-            #super(IsomorphicPartitioner.__ColourPartitionList, self).__init__()
-            self._unhashed = True
-
-        def __eq__(self, value):
-            return self.__hash__() == value.__hash__()
-
-        def __ne__(self, value):
-            return not self.__eq__(value)
-
-        def __str__(self):
-            template = "ColourPartitionList: {}"
-            return template.format(",  ".join(s.__str__()
-                                              + ": "
-                                              + str(len(s)) for s in self))
-
-        def __hash__(self):
-            return int.from_bytes(self._getHashCode(), byteorder='big')
-
-        def _getHashCode(self):
-            if self._unhashed:
-                # no need to order, its supposed to be already ordered when created
-                sortedHashes = []
-                for colourPartition in self:
-                    sortedHashes.append(colourPartition._getHashCode())
-                self.hash = self._combine_ordered(sortedHashes)
-                self._unhashed = False
-            return self.hash
-
-        # @credits https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java
-        def _combine_ordered(self, code_array):
-            resultBytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            for code in iter(code_array):
-                for i in range(0, 16):
-                    resultBytes[i] = ((resultBytes[i] * 37) % 256) ^ code[i]
-            return bytes(resultBytes)
-
     class __PartiallyOrderedGraph:
         def __init__(self, graph, clr, blanknodes):
             self.graph = graph
@@ -317,3 +279,45 @@ class IsomorphicPartitioner:
 
                     return True
             return False
+
+
+class ColourPartitionList(list):
+    def __init__(self, colourMap):
+        self._unhashed = True
+        self._colourMap = colourMap
+
+    def __getitem__(self, key):
+        if issubclass(key.__class__, int):
+            return super(ColourPartitionList, self).__getitem__(key)
+        return self._colourMap[key]
+
+    def __eq__(self, value):
+        return self.__hash__() == value.__hash__()
+
+    def __ne__(self, value):
+        return not self.__eq__(value)
+
+    def __str__(self):
+        template = "ColourPartitionList: {}"
+        return template.format(",  ".join(s.__str__() + ": " + str(len(s)) for s in self))
+
+    def __hash__(self):
+        return int.from_bytes(self._getHashCode(), byteorder='big')
+
+    def _getHashCode(self):
+        if self._unhashed:
+            # no need to order, its supposed to be already ordered when created
+            sortedHashes = []
+            for colourPartition in self:
+                sortedHashes.append(colourPartition._getHashCode())
+            self.hash = self._combine_ordered(sortedHashes)
+            self._unhashed = False
+        return self.hash
+
+    # @credits https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java
+    def _combine_ordered(self, code_array):
+        resultBytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        for code in iter(code_array):
+            for i in range(0, 16):
+                resultBytes[i] = ((resultBytes[i] * 37) % 256) ^ code[i]
+        return bytes(resultBytes)

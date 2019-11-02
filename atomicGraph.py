@@ -177,7 +177,7 @@ class AtomicGraph(rdflib.Graph):
     def getMeta(self):
         return [self.numberOfBNodes, self.maxNumbersNeighbors]
 
-    def str(self):
+    def __str__(self):
         result = ""
         for subj, pred, obj in self:
             result += "{0} {1} {2}.\n".format(subj, pred, obj)

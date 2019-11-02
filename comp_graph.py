@@ -6,59 +6,50 @@ import coloring
 class ComparableGraph(rdflib.Graph):
     def __init__(self, graph):
         super()
-        # TODO do something more clever
-        #      we only copy so we can use this object like the original graph
-        # for triple in graph.triples((None, None, None)):
-        #     self.add(triple)
         slicer = atomicGraph.GraphSlicer(graph)
         slicer.run()
-        self._sortAndGroupAtomicGraphs(slicer.getAtomicGraphs())
+        self.atomicGraphs = set()
+        partitioner = coloring.IsomorphicPartitioner()
+        for aGraph in slicer.getAtomicGraphs():
+            self.atomicGraphs.add(ComparableGraph.AtomicHashGraph(aGraph, partitioner))
 
     def __eq__(self, value):
         if(issubclass(value.__class__, ComparableGraph)):
-            if(len(value.atomicGraphTupel) != len(self.atomicGraphTupel)):
-                return False
-            otherATL = iter(value.atomicGraphTupel)
-            for atomicTupel in self.atomicGraphTupel:
-                if(not self._compareListSets(atomicTupel, next(otherATL))):
-                    return False
-            return True
+            if(len(self.atomicGraphs) == len(value.atomicGraphs)):
+                # just check if all graphs are in the others atomicGraphs set
+                for aGraph in self.atomicGraphs:
+                    if(aGraph not in value.atomicGraphs):
+                        return False
+                return True
+            return False
         if(issubclass(value.__class__, rdflib.Graph)):
             return self == ComparableGraph(value)
         return False
 
-    def _sortAndGroupAtomicGraphs(self, atomicSet):
-        partitioner = coloring.IsomorphicPartitioner()
+    class AtomicHashGraph:
+        def __init__(self, atomicGraph, isomorphicPartitioner):
+            self.atomicGraph = atomicGraph
+            self.colourPartitions = isomorphicPartitioner.partitionIsomorphic(atomicGraph)
 
-        atomicGraphs = list(atomicSet)
-        atomicGraphs.sort(key=lambda atomic: (atomic.getMeta()[0],
-                                              atomic.getMeta()[1]),
-                          reverse=True)
-        meta0 = -1
-        meta1 = -1
-        metaGroup = set()
-        self.atomicGraphTupel = []
-        for atomic in atomicGraphs:
-            if(atomic.getMeta()[0] != meta0 or atomic.getMeta()[1] != meta1):
-                if(metaGroup):
-                    self.atomicGraphTupel.append(metaGroup)
-                meta0 = atomic.getMeta()[0]
-                meta1 = atomic.getMeta()[1]
-                metaGroup = set()
-            metaGroup.add((atomic, partitioner.partitionIsomorphic(atomic)))
-        if metaGroup:
-            self.atomicGraphTupel.append(metaGroup)
+        def __eq__(self, value):
+            return self.colourPartitions == value.colourPartitions
 
-    def _compareListSets(self, setA, setB):
-        setAC = setA.copy()
-        setBC = setB.copy()
-        for graphColourPairA in setAC:
-            found = False
-            for graphColourPairB in setBC:
-                if(graphColourPairA[1] == graphColourPairB[1]):
-                    setBC.remove(graphColourPairB)
-                    found = True
-                    break
-            if(not found):
-                return False
-        return True
+        def __hash__(self):
+            return self.colourPartitions.__hash__()
+
+        def __lt__(self, other):
+            return hash(self) < hash(other)
+
+        def __le__(self, other):
+            return hash(self) <= hash(other)
+
+        def __str__(self):
+            result = ""
+            for subj, pred, obj in self.atomicGraph:
+                result += "{0} {1} {2}.\n".format(self.colourPartitions[subj],
+                                                  self.colourPartitions[pred],
+                                                  self.colourPartitions[obj])
+            return result
+
+        def __repr__(self):
+            return "AtomicHashGraph(#IsoPartitions: {})".format(len(self.colourPartitions))
