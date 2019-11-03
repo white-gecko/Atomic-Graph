@@ -4,7 +4,9 @@ from rdflib.compare import to_isomorphic
 
 class GraphSlicer:
     def __init__(self, graph):
-        self.graph = graph
+        self.graph = rdflib.Graph()
+        # make a copy of the graph so the original does not get consumed
+        self.graph = self.graph + graph
         self.atomicGraphs = set()
         self.currentAtomicGraph = AtomicGraph()
         self.nextNodeOther = []
