@@ -5,7 +5,8 @@ import coloring
 
 class ComparableGraph(rdflib.Graph):
     def __init__(self, graph, atomicGraphs=None):
-        super(ComparableGraph, self).__init__(graph.store)
+        super(ComparableGraph, self).__init__(graph.store,
+                                              graph.identifier, graph.namespace_manager)
         self.graph = graph
         if atomicGraphs is None:
             slicer = atomic_graph.GraphSlicer(graph)
@@ -55,6 +56,9 @@ class ComparableGraph(rdflib.Graph):
         result = ComparableGraph(self.graph.__xor__(other.graph),
                                  self.atomicGraphs.__xor__(other.atomicGraphs))
         return result
+
+    def __hash__(self):
+        return super(ComparableGraph, self).__hash__()
 
     class AtomicHashGraph:
         def __init__(self, atomicGraph, isomorphicPartitioner):
