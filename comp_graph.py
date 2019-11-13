@@ -1,6 +1,5 @@
 import rdflib
 import atomic_graph
-import coloring
 
 
 class ComparableGraph(rdflib.Graph):
@@ -38,13 +37,10 @@ class ComparableGraph(rdflib.Graph):
         return super(ComparableGraph, self).__hash__()
 
     def recalculatePartition(self):
-        slicer = atomic_graph.GraphSlicer(self)
-        slicer.run()
+        slicer = atomic_graph.AtomicGraphFactory(self)
         self._partition = set()
-        partitioner = coloring.IsomorphicPartitioner()
-        for atomicGraph in slicer.getAtomicGraphs():
-            colorPartitions = partitioner.partitionIsomorphic(atomicGraph)
-            self._partition.add(ComparableGraph.AtomicHashGraph(atomicGraph, colorPartitions))
+        for atomicGraph in slicer:
+            self._partition.add(atomicGraph)
 
     @property
     def partition(self):
@@ -79,31 +75,3 @@ class ComparableGraph(rdflib.Graph):
     def addN(self, triples):
         super().addN(triples)
         self.invalidate()
-
-    class AtomicHashGraph:
-        def __init__(self, atomicGraph, colorPartitions):
-            self.atomicGraph = atomicGraph
-            self.colourPartitions = colorPartitions
-
-        def __eq__(self, value):
-            return self.colourPartitions == value.colourPartitions
-
-        def __hash__(self):
-            return self.colourPartitions.__hash__()
-
-        def __lt__(self, other):
-            return hash(self) < hash(other)
-
-        def __le__(self, other):
-            return hash(self) <= hash(other)
-
-        def __str__(self):
-            result = ""
-            for subj, pred, obj in self.atomicGraph:
-                result += "{0} {1} {2}.\n".format(self.colourPartitions[subj],
-                                                  self.colourPartitions[pred],
-                                                  self.colourPartitions[obj])
-            return result
-
-        def __repr__(self):
-            return "AtomicHashGraph(#IsoPartitions: {})".format(len(self.colourPartitions))
