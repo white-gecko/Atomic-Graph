@@ -8,41 +8,6 @@ class ComparableGraph(rdflib.Graph):
         super(ComparableGraph, self).__init__(store, identifier, namespace_manager)
         self.invalidate()
 
-    def recalculatePartition(self):
-        slicer = atomic_graph.GraphSlicer(self)
-        slicer.run()
-        self._partition = set()
-        partitioner = coloring.IsomorphicPartitioner()
-        for atomicGraph in slicer.getAtomicGraphs():
-            colorPartitions = partitioner.partitionIsomorphic(atomicGraph)
-            self._partition.add(ComparableGraph.AtomicHashGraph(atomicGraph, colorPartitions))
-
-    @property
-    def partition(self):
-        if self._partition is None:
-            self.recalculatePartition()
-        return self._partition
-
-    @partition.setter
-    def partition(self, partition):
-        self._partition = partition
-
-    def invalidate(self):
-        self._partition = None
-
-    def __eq__(self, other):
-        if(issubclass(other.__class__, ComparableGraph)):
-            if(len(self.partition) == len(other.partition)):
-                # just check if all graphs are in the others partition set
-                for aGraph in self.partition:
-                    if(aGraph not in other.partition):
-                        return False
-                return True
-            return False
-        if(issubclass(other.__class__, rdflib.Graph)):
-            return self == ComparableGraph(other)
-        return False
-
     def __add__(self, other):
         result = ComparableGraph(super().__or__(other).store)
         result.partition = self.partition.__or__(other.partition)
@@ -72,13 +37,47 @@ class ComparableGraph(rdflib.Graph):
     def __hash__(self):
         return super(ComparableGraph, self).__hash__()
 
+    def recalculatePartition(self):
+        slicer = atomic_graph.GraphSlicer(self)
+        slicer.run()
+        self._partition = set()
+        partitioner = coloring.IsomorphicPartitioner()
+        for atomicGraph in slicer.getAtomicGraphs():
+            colorPartitions = partitioner.partitionIsomorphic(atomicGraph)
+            self._partition.add(ComparableGraph.AtomicHashGraph(atomicGraph, colorPartitions))
+
+    @property
+    def partition(self):
+        if self._partition is None:
+            self.recalculatePartition()
+        return self._partition
+
+    @partition.setter
+    def partition(self, partition):
+        self._partition = partition
+
+    def invalidate(self):
+        self._partition = None
+
+    def equal(self, other):
+        if(issubclass(other.__class__, ComparableGraph)):
+            if(len(self.partition) == len(other.partition)):
+                # just check if all graphs are in the others partition set
+                for aGraph in self.partition:
+                    if(aGraph not in other.partition):
+                        return False
+                return True
+            return False
+        if(issubclass(other.__class__, rdflib.Graph)):
+            return self == ComparableGraph(other)
+        return False
+
     def add(self, triple):
         super().add(triple)
         self.invalidate()
 
-
     def addN(self, triples):
-        super().addN(triple)
+        super().addN(triples)
         self.invalidate()
 
     class AtomicHashGraph:
