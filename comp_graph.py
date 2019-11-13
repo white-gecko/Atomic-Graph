@@ -1,20 +1,16 @@
 import rdflib
 import atomic_graph
-import coloring
 
 
 class ComparableGraph(rdflib.Graph):
-    def __init__(self, graph, atomicGraphs=None):
-        super(ComparableGraph, self).__init__(graph.store,
-                                              graph.identifier, graph.namespace_manager)
+    def __init__(self, graph, atomicGraphs=None, store='default', identifier=None, namespace_manager=None):
+        super(ComparableGraph, self).__init__(store, identifier, namespace_manager)
         self.graph = graph
         if atomicGraphs is None:
-            slicer = atomic_graph.GraphSlicer(graph)
-            slicer.run()
+            slicer = atomic_graph.AtomicGraphFactory(graph)
             self.atomicGraphs = set()
-            partitioner = coloring.IsomorphicPartitioner()
-            for aGraph in slicer.getAtomicGraphs():
-                self.atomicGraphs.add(ComparableGraph.AtomicHashGraph(aGraph, partitioner))
+            for aGraph in slicer:
+                self.atomicGraphs.add(aGraph)
         else:
             self.atomicGraphs = atomicGraphs
 
@@ -59,31 +55,3 @@ class ComparableGraph(rdflib.Graph):
 
     def __hash__(self):
         return super(ComparableGraph, self).__hash__()
-
-    class AtomicHashGraph:
-        def __init__(self, atomicGraph, isomorphicPartitioner):
-            self.atomicGraph = atomicGraph
-            self.colourPartitions = isomorphicPartitioner.partitionIsomorphic(atomicGraph)
-
-        def __eq__(self, value):
-            return self.colourPartitions == value.colourPartitions
-
-        def __hash__(self):
-            return self.colourPartitions.__hash__()
-
-        def __lt__(self, other):
-            return hash(self) < hash(other)
-
-        def __le__(self, other):
-            return hash(self) <= hash(other)
-
-        def __str__(self):
-            result = ""
-            for subj, pred, obj in self.atomicGraph:
-                result += "{0} {1} {2}.\n".format(self.colourPartitions[subj],
-                                                  self.colourPartitions[pred],
-                                                  self.colourPartitions[obj])
-            return result
-
-        def __repr__(self):
-            return "AtomicHashGraph(#IsoPartitions: {})".format(len(self.colourPartitions))
