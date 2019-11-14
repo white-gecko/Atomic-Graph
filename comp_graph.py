@@ -1,9 +1,10 @@
 import rdflib
 import atomic_graph
 import coloring
+from hash_combiner import HashCombiner
 
 
-class ComparableGraph(rdflib.Graph):
+class ComparableGraph(rdflib.Graph, HashCombiner):
     def __init__(self, store='default', identifier=None, namespace_manager=None):
         super(ComparableGraph, self).__init__(store, identifier, namespace_manager)
         self.invalidate()
@@ -42,9 +43,15 @@ class ComparableGraph(rdflib.Graph):
         slicer.run()
         self._partition = set()
         partitioner = coloring.IsomorphicPartitioner()
+        hashList = []
         for atomicGraph in slicer.getAtomicGraphs():
             colorPartitions = partitioner.partitionIsomorphic(atomicGraph)
-            self._partition.add(ComparableGraph.AtomicHashGraph(atomicGraph, colorPartitions))
+            hashGraph = ComparableGraph.AtomicHashGraph(atomicGraph, colorPartitions)
+            self._partition.add(hashGraph)
+            hashList.append(hashGraph.__hash__().to_bytes(16, 'big'))
+        hashList.sort()
+        # this hash should not be returned by __hash__ since it can change
+        self._hash = self.combine_ordered(hashList)
 
     @property
     def partition(self):
@@ -56,18 +63,20 @@ class ComparableGraph(rdflib.Graph):
     def partition(self, partition):
         self._partition = partition
 
+    @property
+    def hash(self):
+        if self._hash is None:
+            self.recalculatePartition()
+        return self._hash
+
     def invalidate(self):
         self._partition = None
+        self._hash = None
 
     def equal(self, other):
         if(issubclass(other.__class__, ComparableGraph)):
-            if(len(self.partition) == len(other.partition)):
-                # just check if all graphs are in the others partition set
-                for aGraph in self.partition:
-                    if(aGraph not in other.partition):
-                        return False
-                return True
-            return False
+            #print("{} == {} => {}".format(self.hash, other.hash, self.hash == other.hash))
+            return self.hash == other.hash
         if(issubclass(other.__class__, rdflib.Graph)):
             return self == ComparableGraph(store=other.store,
                                            identifier=other.identifier,
