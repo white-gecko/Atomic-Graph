@@ -69,7 +69,9 @@ class ComparableGraph(rdflib.Graph):
                 return True
             return False
         if(issubclass(other.__class__, rdflib.Graph)):
-            return self == ComparableGraph(other)
+            return self == ComparableGraph(store=other.store,
+                                           identifier=other.identifier,
+                                           namespace_manager=other.namespace_manager)
         return False
 
     def add(self, triple):
