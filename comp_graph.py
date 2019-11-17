@@ -1,8 +1,10 @@
 import rdflib
 import atomic_graph
+import coloring
+from hash_combiner import HashCombiner
 
 
-class ComparableGraph(rdflib.Graph):
+class ComparableGraph(rdflib.Graph, HashCombiner):
     def __init__(self, store='default', identifier=None, namespace_manager=None):
         super(ComparableGraph, self).__init__(store, identifier, namespace_manager)
         self.invalidate()
@@ -39,8 +41,13 @@ class ComparableGraph(rdflib.Graph):
     def recalculatePartition(self):
         slicer = atomic_graph.AtomicGraphFactory(self)
         self._partition = set()
+        hashList = []
         for atomicGraph in slicer:
             self._partition.add(atomicGraph)
+            hashList.append(atomicGraph.__hash__().to_bytes(16, 'big'))
+        hashList.sort()
+        # this hash should not be returned by __hash__ since it can change
+        self._hash = self.combine_ordered(hashList)
 
     @property
     def partition(self):
@@ -52,20 +59,26 @@ class ComparableGraph(rdflib.Graph):
     def partition(self, partition):
         self._partition = partition
 
+    @property
+    def hash(self):
+        if self._hash is None:
+            self.recalculatePartition()
+        return self._hash
+
     def invalidate(self):
         self._partition = None
+        self._hash = None
 
-    def equal(self, other):
+    def __eq__(self, other):
         if(issubclass(other.__class__, ComparableGraph)):
-            if(len(self.partition) == len(other.partition)):
-                # just check if all graphs are in the others partition set
-                for aGraph in self.partition:
-                    if(aGraph not in other.partition):
-                        return False
-                return True
-            return False
+            #print("{} == {} => {}".format(self.hash, other.hash, self.hash == other.hash))
+            return self.hash == other.hash
+        if(isinstance(other, rdflib.Graph)):
+            return super().__eq__(other)
         if(issubclass(other.__class__, rdflib.Graph)):
-            return self == ComparableGraph(other)
+            return self == ComparableGraph(store=other.store,
+                                           identifier=other.identifier,
+                                           namespace_manager=other.namespace_manager)
         return False
 
     def add(self, triple):
