@@ -3,8 +3,8 @@ import setSearchPath
 import rdflib
 import comp_graph
 
-class TestComparableGraph(unittest.TestCase):
 
+class TestComparableGraph(unittest.TestCase):
     def testNotEqualGraphs(self):
         graphA = comp_graph.ComparableGraph()
         graphB = comp_graph.ComparableGraph()
@@ -26,6 +26,8 @@ class TestComparableGraph(unittest.TestCase):
     def testSetAddGraphs(self):
         graphA = comp_graph.ComparableGraph()
         graphB = comp_graph.ComparableGraph()
+        graphA.parse('../Examples/example1.ttl', format='turtle')
+        graphB.parse('../Examples/example2.ttl', format='n3')
 
         graphC = graphA + graphB
 
@@ -33,6 +35,8 @@ class TestComparableGraph(unittest.TestCase):
         self.assertNotEqual(graphA, graphC)
         self.assertFalse(graphB == graphC)
         self.assertNotEqual(graphB, graphC)
+
+    # TODO other operators
 
 
 if __name__ == '__main__':
