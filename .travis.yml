@@ -1,0 +1,20 @@
+language: python
+python:
+    - "3.5"
+
+dist: bionic
+sudo: required
+
+addons:
+  apt:
+    packages:
+      - git
+install:
+  - pip install -r requirements.txt
+
+before_script:
+  - cd tests
+
+script:
+  - python compareParseData.py
+  - python test_simpleisomorphism.py
