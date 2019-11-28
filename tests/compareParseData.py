@@ -8,8 +8,8 @@ class TestComparableGraph(unittest.TestCase):
     def testNotEqualGraphs(self):
         graphA = comp_graph.ComparableGraph()
         graphB = comp_graph.ComparableGraph()
-        graphA.parse('../Examples/example1.ttl', format='turtle')
-        graphB.parse('../Examples/example2.ttl', format='n3')
+        graphA.parse('../examples/example1.ttl', format='turtle')
+        graphB.parse('../examples/example2.ttl', format='n3')
 
         self.assertFalse(graphA == graphB)
         self.assertNotEqual(graphA, graphB)
@@ -17,8 +17,8 @@ class TestComparableGraph(unittest.TestCase):
     def testEqualGraphs(self):
         graphA = comp_graph.ComparableGraph()
         graphB = comp_graph.ComparableGraph()
-        graphA.parse('../Examples/isoSimpleGraph1.ttl', format='n3')
-        graphB.parse('../Examples/isoSimpleGraph1.ttl', format='n3')
+        graphA.parse('../examples/isoSimpleGraph1.ttl', format='n3')
+        graphB.parse('../examples/isoSimpleGraph1.ttl', format='n3')
 
         self.assertTrue(graphA == graphB)
         self.assertEqual(graphA, graphB)
@@ -26,8 +26,8 @@ class TestComparableGraph(unittest.TestCase):
     def testSetAddGraphs(self):
         graphA = comp_graph.ComparableGraph()
         graphB = comp_graph.ComparableGraph()
-        graphA.parse('../Examples/example1.ttl', format='turtle')
-        graphB.parse('../Examples/example2.ttl', format='n3')
+        graphA.parse('../examples/example1.ttl', format='turtle')
+        graphB.parse('../examples/example2.ttl', format='n3')
 
         graphC = graphA + graphB
 
@@ -39,8 +39,8 @@ class TestComparableGraph(unittest.TestCase):
     def testSetSubGraphs(self):
         graphA = comp_graph.ComparableGraph()
         graphB = comp_graph.ComparableGraph()
-        graphA.parse('../Examples/example1.ttl', format='turtle')
-        graphB.parse('../Examples/example2.ttl', format='n3')
+        graphA.parse('../examples/example1.ttl', format='turtle')
+        graphB.parse('../examples/example2.ttl', format='n3')
 
         graphC = graphA - graphB
 
@@ -52,8 +52,8 @@ class TestComparableGraph(unittest.TestCase):
     def testSetOrGraphs(self):
         graphA = comp_graph.ComparableGraph()
         graphB = comp_graph.ComparableGraph()
-        graphA.parse('../Examples/example1.ttl', format='turtle')
-        graphB.parse('../Examples/example2.ttl', format='n3')
+        graphA.parse('../examples/example1.ttl', format='turtle')
+        graphB.parse('../examples/example2.ttl', format='n3')
 
         graphC = graphA | graphB
 
@@ -65,8 +65,8 @@ class TestComparableGraph(unittest.TestCase):
     def testSetAndGraphs(self):
         graphA = comp_graph.ComparableGraph()
         graphB = comp_graph.ComparableGraph()
-        graphA.parse('../Examples/example1.ttl', format='turtle')
-        graphB.parse('../Examples/example2.ttl', format='n3')
+        graphA.parse('../examples/example1.ttl', format='turtle')
+        graphB.parse('../examples/example2.ttl', format='n3')
 
         graphC = graphA & graphB
 
@@ -78,8 +78,8 @@ class TestComparableGraph(unittest.TestCase):
     def testSetMulGraphs(self):
         graphA = comp_graph.ComparableGraph()
         graphB = comp_graph.ComparableGraph()
-        graphA.parse('../Examples/example1.ttl', format='turtle')
-        graphB.parse('../Examples/example2.ttl', format='n3')
+        graphA.parse('../examples/example1.ttl', format='turtle')
+        graphB.parse('../examples/example2.ttl', format='n3')
 
         graphC = graphA * graphB
 
@@ -91,8 +91,8 @@ class TestComparableGraph(unittest.TestCase):
     def testSetXorGraphs(self):
         graphA = comp_graph.ComparableGraph()
         graphB = comp_graph.ComparableGraph()
-        graphA.parse('../Examples/example1.ttl', format='turtle')
-        graphB.parse('../Examples/example2.ttl', format='n3')
+        graphA.parse('../examples/example1.ttl', format='turtle')
+        graphB.parse('../examples/example2.ttl', format='n3')
 
         graphC = graphA ^ graphB
 

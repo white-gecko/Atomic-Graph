@@ -1,6 +1,5 @@
 import rdflib
 import atomic_graph
-import coloring
 from hash_combiner import HashCombiner
 
 
