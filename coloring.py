@@ -2,6 +2,7 @@ import rdflib
 import hashlib
 from sortedcontainers import SortedList
 from collections import defaultdict
+from hash_combiner import HashCombiner
 
 
 # check http://aidanhogan.com/docs/skolems_blank_nodes_www.pdf
@@ -13,7 +14,7 @@ class IsomorphicPartitioner:
         self.__marker_hash = self.__hash_type("[@]".encode('utf-8')).digest()
         self.__hashBag = IsomorphicPartitioner.__HashBag()
         self.__hashTupel = IsomorphicPartitioner.__HashTupel()
-        self.__genericHashCombiner = self.__HashCombiner()
+        self.__genericHashCombiner = HashCombiner()
 
     def _colour(self, graph, colour=None):
         if colour is None:
@@ -181,20 +182,11 @@ class IsomorphicPartitioner:
         blanknodes = self._extract_blanknodes(graph)
         return self._create_partitions(colour, blanknodes)
 
-    class __HashCombiner:
-        # @credits https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java
-        def combine_ordered(self, code_array):
-            resultBytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            for code in iter(code_array):
-                for i in range(0, 16):
-                    resultBytes[i] = ((resultBytes[i] * 37) % 256) ^ code[i]
-            return bytes(resultBytes)
-
-    class __HashTupel(__HashCombiner):
+    class __HashTupel(HashCombiner):
         def hash(self, colour1, colour2):
             return self.combine_ordered([colour1, colour2])
 
-    class __HashBag(__HashCombiner):
+    class __HashBag(HashCombiner):
         def __init__(self):
             self.colourCodeLists = {}
 
@@ -279,7 +271,7 @@ class IsomorphicPartitioner:
             return False
 
 
-class ColourPartitionList(list):
+class ColourPartitionList(list, HashCombiner):
     def __init__(self, colourMap):
         self._unhashed = True
         self._colourMap = colourMap
@@ -302,19 +294,12 @@ class ColourPartitionList(list):
     def __hash__(self):
         return int.from_bytes(self.get_hash_code(), byteorder='big')
 
-    def _combine_ordered(self, code_array):
-        resultBytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        for code in iter(code_array):
-            for i in range(0, 16):
-                resultBytes[i] = ((resultBytes[i] * 37) % 256) ^ code[i]
-        return bytes(resultBytes)
-
     def get_hash_code(self):
         if self._unhashed:
             # no need to order, its supposed to be already ordered when created
             sortedHashes = []
             for colourPartition in self:
                 sortedHashes.append(colourPartition.get_hash_code())
-            self.hash = self._combine_ordered(sortedHashes)
+            self.hash = self.combine_ordered(sortedHashes)
             self._unhashed = False
         return self.hash
