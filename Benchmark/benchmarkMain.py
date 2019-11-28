@@ -73,5 +73,5 @@ for i in range(0, len(graphs)):
             output("testing: " + os.path.join(path, name))
             test_colouring(os.path.join(path, name), RDFFormat[i],
                            collected_data)
-output("results: " + str(collected_data[0]/collected_data[1]))
+output("results: " + str(collected_data[0] / collected_data[1]))
 outputFile.close()

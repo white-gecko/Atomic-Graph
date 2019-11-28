@@ -71,7 +71,6 @@ class ComparableGraph(rdflib.Graph, HashCombiner):
 
     def __eq__(self, other):
         if(issubclass(other.__class__, ComparableGraph)):
-            #print("{} == {} => {}".format(self.hash, other.hash, self.hash == other.hash))
             return self.hash == other.hash
         if(isinstance(other, rdflib.Graph)):
             return super().__eq__(other)

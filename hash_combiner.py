@@ -1,5 +1,5 @@
+# @credits https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java
 class HashCombiner:
-    # @credits https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java
     def combine_ordered(self, code_array):
         resultBytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         for code in iter(code_array):
