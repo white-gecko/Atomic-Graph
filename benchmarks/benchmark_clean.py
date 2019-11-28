@@ -91,5 +91,5 @@ if(testType == "colouring"):
         benchmarkColouring(graph)
 else:
     graphs = prepareGraphs(graphs, RDFFormat)
-    for i in range(0, int(len(graphs)/2)):
-        benchmarkIsomorphism(graphs[i*2], graphs[i*2 + 1])
+    for i in range(0, int(len(graphs) / 2)):
+        benchmarkIsomorphism(graphs[i * 2], graphs[i * 2 + 1])

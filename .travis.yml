@@ -1,0 +1,28 @@
+language: python
+python:
+    - "3.5"
+
+dist: bionic
+sudo: required
+
+addons:
+  apt:
+    packages:
+      - git
+install:
+  - pip install -r requirements.txt
+  - pip install pylava
+  - pip install coverage
+  - pip install python-coveralls
+
+before_script:
+  - pylava
+  - cd tests
+
+script:
+  - coverage run --source=../atomicgraph compareParseData.py
+  - coverage run --source=../atomicgraph -a test_simpleisomorphism.py
+
+after_success:
+  - coverage report -m
+  - coveralls
