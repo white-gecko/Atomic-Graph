@@ -1,6 +1,5 @@
 import rdflib
 import atomic_graph
-import coloring
 from hash_combiner import HashCombiner
 
 
@@ -39,16 +38,12 @@ class ComparableGraph(rdflib.Graph, HashCombiner):
         return super(ComparableGraph, self).__hash__()
 
     def recalculatePartition(self):
-        slicer = atomic_graph.GraphSlicer(self)
-        slicer.run()
+        slicer = atomic_graph.AtomicGraphFactory(self)
         self._partition = set()
-        partitioner = coloring.IsomorphicPartitioner()
         hashList = []
-        for atomicGraph in slicer.getAtomicGraphs():
-            colorPartitions = partitioner.partitionIsomorphic(atomicGraph)
-            hashGraph = ComparableGraph.AtomicHashGraph(atomicGraph, colorPartitions)
-            self._partition.add(hashGraph)
-            hashList.append(hashGraph.__hash__().to_bytes(16, 'big'))
+        for atomicGraph in slicer:
+            self._partition.add(atomicGraph)
+            hashList.append(atomicGraph.__hash__().to_bytes(16, 'big'))
         hashList.sort()
         # this hash should not be returned by __hash__ since it can change
         self._hash = self.combine_ordered(hashList)
@@ -75,7 +70,6 @@ class ComparableGraph(rdflib.Graph, HashCombiner):
 
     def __eq__(self, other):
         if(issubclass(other.__class__, ComparableGraph)):
-            #print("{} == {} => {}".format(self.hash, other.hash, self.hash == other.hash))
             return self.hash == other.hash
         if(isinstance(other, rdflib.Graph)):
             return super().__eq__(other)
@@ -92,31 +86,3 @@ class ComparableGraph(rdflib.Graph, HashCombiner):
     def addN(self, triples):
         super().addN(triples)
         self.invalidate()
-
-    class AtomicHashGraph:
-        def __init__(self, atomicGraph, colorPartitions):
-            self.atomicGraph = atomicGraph
-            self.colourPartitions = colorPartitions
-
-        def __eq__(self, value):
-            return self.colourPartitions == value.colourPartitions
-
-        def __hash__(self):
-            return self.colourPartitions.__hash__()
-
-        def __lt__(self, other):
-            return hash(self) < hash(other)
-
-        def __le__(self, other):
-            return hash(self) <= hash(other)
-
-        def __str__(self):
-            result = ""
-            for subj, pred, obj in self.atomicGraph:
-                result += "{0} {1} {2}.\n".format(self.colourPartitions[subj],
-                                                  self.colourPartitions[pred],
-                                                  self.colourPartitions[obj])
-            return result
-
-        def __repr__(self):
-            return "AtomicHashGraph(#IsoPartitions: {})".format(len(self.colourPartitions))
