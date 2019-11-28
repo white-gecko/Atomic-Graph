@@ -10,12 +10,10 @@ class ComparableGraph(rdflib.Graph, HashCombiner):
 
     def __add__(self, other):
         result = ComparableGraph(super().__or__(other).store)
-        result.partition = self.partition.__or__(other.partition)
         return result
 
     def __sub__(self, other):
         result = ComparableGraph(super().__sub__(other).store)
-        result.partition = self.partition.__sub__(other.partition)
         return result
 
     def __or__(self, other):
@@ -26,16 +24,33 @@ class ComparableGraph(rdflib.Graph, HashCombiner):
 
     def __mul__(self, other):
         result = ComparableGraph(super().__mul__(other).store)
-        result.partition = self.partition.__and__(other.partition)
         return result
 
     def __xor__(self, other):
         result = ComparableGraph(super().__xor__(other).store)
-        result.partition = self.partition.__xor__(other.partition)
         return result
 
     def __hash__(self):
         return super(ComparableGraph, self).__hash__()
+
+    def __eq__(self, other):
+        if(issubclass(other.__class__, ComparableGraph)):
+            return self.hash == other.hash
+        if(isinstance(other, rdflib.Graph)):
+            return super().__eq__(other)
+        if(issubclass(other.__class__, rdflib.Graph)):
+            return self == ComparableGraph(store=other.store,
+                                           identifier=other.identifier,
+                                           namespace_manager=other.namespace_manager)
+        return False
+
+    def __iadd__(self, other):
+        self.invalidate()
+        return super().__iadd__(other)
+
+    def __isub__(self, other):
+        self.invalidate()
+        return super().__isub__(other)
 
     def recalculatePartition(self):
         slicer = atomic_graph.AtomicGraphFactory(self)
@@ -68,17 +83,6 @@ class ComparableGraph(rdflib.Graph, HashCombiner):
         self._partition = None
         self._hash = None
 
-    def __eq__(self, other):
-        if(issubclass(other.__class__, ComparableGraph)):
-            return self.hash == other.hash
-        if(isinstance(other, rdflib.Graph)):
-            return super().__eq__(other)
-        if(issubclass(other.__class__, rdflib.Graph)):
-            return self == ComparableGraph(store=other.store,
-                                           identifier=other.identifier,
-                                           namespace_manager=other.namespace_manager)
-        return False
-
     def add(self, triple):
         super().add(triple)
         self.invalidate()
@@ -86,3 +90,19 @@ class ComparableGraph(rdflib.Graph, HashCombiner):
     def addN(self, triples):
         super().addN(triples)
         self.invalidate()
+
+    def set(self, triple):
+        super().set(triple)
+        self.invalidate()
+
+    def parse(self, source=None, publicID=None, format=None,
+              location=None, file=None, data=None, **args):
+        self.invalidate()
+        return super().parse(source=None, publicID=None, format=None, location=None, file=None,
+                             data=None, **args)
+
+    def update(self, update_object, processor='sparql', initNs=None, initBindings=None,
+               use_store_provided=True, **kwargs):
+        self.invalidate()
+        return super().update(update_object, processor='sparql', initNs=None, initBindings=None,
+                              use_store_provided=True, **kwargs)
