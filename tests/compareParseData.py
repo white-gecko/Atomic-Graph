@@ -36,6 +36,71 @@ class TestComparableGraph(unittest.TestCase):
         self.assertFalse(graphB == graphC)
         self.assertNotEqual(graphB, graphC)
 
+    def testSetSubGraphs(self):
+        graphA = comp_graph.ComparableGraph()
+        graphB = comp_graph.ComparableGraph()
+        graphA.parse('../Examples/example1.ttl', format='turtle')
+        graphB.parse('../Examples/example2.ttl', format='n3')
+
+        graphC = graphA - graphB
+
+        self.assertFalse(graphA == graphC)
+        self.assertNotEqual(graphA, graphC)
+        self.assertFalse(graphB == graphC)
+        self.assertNotEqual(graphB, graphC)
+
+    def testSetOrGraphs(self):
+        graphA = comp_graph.ComparableGraph()
+        graphB = comp_graph.ComparableGraph()
+        graphA.parse('../Examples/example1.ttl', format='turtle')
+        graphB.parse('../Examples/example2.ttl', format='n3')
+
+        graphC = graphA | graphB
+
+        self.assertFalse(graphA == graphC)
+        self.assertNotEqual(graphA, graphC)
+        self.assertFalse(graphB == graphC)
+        self.assertNotEqual(graphB, graphC)
+
+    def testSetAndGraphs(self):
+        graphA = comp_graph.ComparableGraph()
+        graphB = comp_graph.ComparableGraph()
+        graphA.parse('../Examples/example1.ttl', format='turtle')
+        graphB.parse('../Examples/example2.ttl', format='n3')
+
+        graphC = graphA & graphB
+
+        self.assertFalse(graphA == graphC)
+        self.assertNotEqual(graphA, graphC)
+        self.assertFalse(graphB == graphC)
+        self.assertNotEqual(graphB, graphC)
+
+    def testSetMulGraphs(self):
+        graphA = comp_graph.ComparableGraph()
+        graphB = comp_graph.ComparableGraph()
+        graphA.parse('../Examples/example1.ttl', format='turtle')
+        graphB.parse('../Examples/example2.ttl', format='n3')
+
+        graphC = graphA * graphB
+
+        self.assertFalse(graphA == graphC)
+        self.assertNotEqual(graphA, graphC)
+        self.assertFalse(graphB == graphC)
+        self.assertNotEqual(graphB, graphC)
+
+    def testSetXorGraphs(self):
+        graphA = comp_graph.ComparableGraph()
+        graphB = comp_graph.ComparableGraph()
+        graphA.parse('../Examples/example1.ttl', format='turtle')
+        graphB.parse('../Examples/example2.ttl', format='n3')
+
+        graphC = graphA ^ graphB
+
+        self.assertFalse(graphA == graphC)
+        self.assertNotEqual(graphA, graphC)
+        self.assertFalse(graphB == graphC)
+        self.assertNotEqual(graphB, graphC)
+
     # TODO other operators
 
 
