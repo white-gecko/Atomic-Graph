@@ -1,5 +1,5 @@
 import rdflib
-import coloring
+from atomicgraph import coloring
 
 
 class AtomicGraphFactory:
@@ -24,7 +24,8 @@ class AtomicGraphFactory:
         graph = next(self.iter)
         if graph:
             partitioner = coloring.IsomorphicPartitioner()
-            aGraph = AtomicGraph(graph.store, graph.identifier, graph.namespace_manager)
+            aGraph = AtomicGraph(store=graph.store, identifier=graph.identifier,
+                                 namespace_manager=graph.namespace_manager)
             aGraph.colourPartitions = partitioner.partitionIsomorphic(graph)
             return aGraph
         else:
@@ -95,7 +96,10 @@ class AtomicGraphFactory:
 
 class AtomicGraph(rdflib.Graph):
     def __eq__(self, value):
-        return self.colourPartitions == value.colourPartitions
+        if isinstance(value, AtomicGraph):
+            return self.__hash__() == value.__hash__()
+        else:
+            return super().__eq__(value)
 
     def __hash__(self):
         return self.colourPartitions.__hash__()

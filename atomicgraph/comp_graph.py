@@ -1,6 +1,6 @@
 import rdflib
-import atomic_graph
-from hash_combiner import HashCombiner
+from atomicgraph import atomic_graph
+from atomicgraph.hash_combiner import HashCombiner
 
 
 class ComparableGraph(rdflib.Graph, HashCombiner):
@@ -83,6 +83,12 @@ class ComparableGraph(rdflib.Graph, HashCombiner):
         self._partition = None
         self._hash = None
 
+    def diff(self, other):
+        if(self.hash == other.hash):
+            return ({}, {})
+        else:
+            return (other._partition - self._partition, self._partition - other._partition)
+
     def add(self, triple):
         super().add(triple)
         self.invalidate()
@@ -98,11 +104,13 @@ class ComparableGraph(rdflib.Graph, HashCombiner):
     def parse(self, source=None, publicID=None, format=None,
               location=None, file=None, data=None, **args):
         self.invalidate()
-        return super().parse(source=None, publicID=None, format=None, location=None, file=None,
-                             data=None, **args)
+        return super().parse(source=source, publicID=publicID, format=format, location=location,
+                             file=file, data=data, **args)
+        # is **args and **kwargs correctly passed?
 
     def update(self, update_object, processor='sparql', initNs=None, initBindings=None,
                use_store_provided=True, **kwargs):
         self.invalidate()
-        return super().update(update_object, processor='sparql', initNs=None, initBindings=None,
-                              use_store_provided=True, **kwargs)
+        return super().update(update_object=update_object, processor=processor, initNs=initNs,
+                              initBindings=initBindings, use_store_provided=use_store_provided,
+                              **kwargs)
