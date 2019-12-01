@@ -1,7 +1,7 @@
 import unittest
 import setSearchPath
 import rdflib
-import comp_graph
+from atomicgraph import comp_graph
 
 
 class TestComparableGraph(unittest.TestCase):

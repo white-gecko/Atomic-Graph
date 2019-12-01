@@ -20,8 +20,8 @@ before_script:
   - cd tests
 
 script:
-  - coverage run --source=../atomicgraph compareParseData.py
-  - coverage run --source=../atomicgraph -a test_simpleisomorphism.py
+  - coverage run --source=../atomicgraph/ compareParseData.py
+  - coverage run --source=../atomicgraph/ -a test_simpleisomorphism.py
 
 after_success:
   - coverage report -m
