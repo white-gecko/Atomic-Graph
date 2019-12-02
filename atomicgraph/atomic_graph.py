@@ -27,6 +27,10 @@ class AtomicGraphFactory:
             aGraph = AtomicGraph(store=graph.store, identifier=graph.identifier,
                                  namespace_manager=graph.namespace_manager)
             aGraph.colourPartitions = partitioner.partitionIsomorphic(graph)
+            # manual copying is necessary since overwritng atomicgraph.__hash__
+            #   would otherwise causing us to lose graphs triples
+            # even given the same store, a graph needs its hash to find its triples
+            aGraph += graph
             return aGraph
         else:
             raise StopIteration
