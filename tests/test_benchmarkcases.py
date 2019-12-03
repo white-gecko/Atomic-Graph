@@ -28,7 +28,7 @@ class TestBenchmarkCases(unittest.TestCase):
         cls.nameGroup = nameGroup
 
     def setUp(self):
-        self.log = open("Log.txt", "a")
+        self.log = open("tests/Log.txt", "a")
 
     def tearDown(self):
         self.log.close()
