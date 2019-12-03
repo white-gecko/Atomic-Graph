@@ -1,6 +1,7 @@
 import rdflib
 from atomicgraph import coloring
 
+import traceback
 
 class AtomicGraphFactory:
     def __init__(self, graph):
@@ -24,14 +25,23 @@ class AtomicGraphFactory:
         graph = next(self.iter)
         if graph:
             partitioner = coloring.IsomorphicPartitioner()
-            aGraph = AtomicGraph(store=graph.store, identifier=graph.identifier,
-                                 namespace_manager=graph.namespace_manager)
-            aGraph.colourPartitions = partitioner.partitionIsomorphic(graph)
+            cid = graph.store.__obj2id(graph)
+            oldHash = graph.__hash__()
+            graph.finalize()
+            newHash = graph.__hash__()
+            graph.store.__obj2int[oldHash] #delete
+            if newHash in graph.store.__obj2int:
+                # collision
+                graph.store.__removeTripleContext(cid)
+            else:
+                graph.store.__obj2int[newHash] = cid
+            # aGraph = AtomicGraph(store=graph.store, identifier=graph.identifier,
+                                 # namespace_manager=graph.namespace_manager)
+            graph.colourPartitions = partitioner.partitionIsomorphic(graph)
             # manual copying is necessary since overwritng atomicgraph.__hash__
             #   would otherwise causing us to lose graphs triples
             # even given the same store, a graph needs its hash to find its triples
-            aGraph += graph
-            return aGraph
+            return graph
         else:
             raise StopIteration
 
@@ -99,14 +109,24 @@ class AtomicGraphFactory:
 
 
 class AtomicGraph(rdflib.Graph):
-    def __eq__(self, value):
-        if isinstance(value, AtomicGraph):
-            return self.__hash__() == value.__hash__()
-        else:
-            return super().__eq__(value)
+    self.final = False
+
+    def finalize(self):
+        self.final = True
+
+    def __eq__(self, other):
+        if isinstance(other, AtomicGraph):
+            return self.__hash__() == other.__hash__()
+        elif isinstance(other, rdflib.Graph):
+            return self.identifier == other.identifier
+        return False
 
     def __hash__(self):
-        return self.colourPartitions.__hash__()
+        if self.final:
+            traceback.print_stack()
+            return self.colourPartitions.__hash__()
+        else:
+            super().__hash__()
 
     def __lt__(self, other):
         return hash(self) < hash(other)
