@@ -16,6 +16,6 @@ setup(
     long_description=__doc__,
     author='Simaris',
     # author_email='foomail@foo.com',
-    packages=['atomicgraph'],
+    packages=['atomicgraphs'],
     install_requires=['rdflib', 'sortedcontainers']
 )
