@@ -12,16 +12,14 @@ addons:
 install:
   - pip install -r requirements.txt
   - pip install pylava
-  - pip install coverage
   - pip install python-coveralls
 
 before_script:
   - pylava
-  - cd tests
 
 script:
-  - coverage run --source=../atomicgraphs/ compareParseData.py
-  - coverage run --source=../atomicgraphs/ -a test_simpleisomorphism.py
+  - coverage run --source=atomicgraph/ -a tests/compareParseData.py
+  - coverage run --source=atomicgraph/ -a tests/test_simpleisomorphism.py
 
 after_success:
   - coverage report -m
