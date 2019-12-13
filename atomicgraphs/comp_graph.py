@@ -1,6 +1,6 @@
 import rdflib
-from atomicgraph import atomic_graph
-from atomicgraph.hash_combiner import HashCombiner
+from atomicgraphs import atomic_graph
+from atomicgraphs.hash_combiner import HashCombiner
 
 
 class ComparableGraph(rdflib.Graph, HashCombiner):

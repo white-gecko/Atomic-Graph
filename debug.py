@@ -1,4 +1,4 @@
-from atomicgraph import comp_graph
+from atomicgraphs import comp_graph
 
 
 graph0 = comp_graph.ComparableGraph()

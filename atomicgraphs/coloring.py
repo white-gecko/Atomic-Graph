@@ -2,7 +2,7 @@ import rdflib
 import hashlib
 from sortedcontainers import SortedList
 from collections import defaultdict
-from atomicgraph.hash_combiner import HashCombiner
+from atomicgraphs.hash_combiner import HashCombiner
 
 
 # check http://aidanhogan.com/docs/skolems_blank_nodes_www.pdf
