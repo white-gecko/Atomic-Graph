@@ -1,5 +1,5 @@
 import rdflib
-from atomicgraph import coloring
+from atomicgraphs import coloring
 
 
 class AtomicGraphFactory:

@@ -1,7 +1,7 @@
 
 ## Install Requirements
 
-    mkvirtualenv -p /usr/bin/python3 -r requirements.txt atomicgraph
+    mkvirtualenv -p /usr/bin/python3 -r requirements.txt atomicgraphs
 
 ## Execute the Benchmark
 

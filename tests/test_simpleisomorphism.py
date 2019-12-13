@@ -1,7 +1,7 @@
 import rdflib
 import unittest
 import setSearchPath
-from atomicgraph import coloring
+from atomicgraphs import coloring
 
 
 class TestSimpleIsomorphism(unittest.TestCase):
