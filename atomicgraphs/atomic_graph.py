@@ -31,11 +31,6 @@ class AtomicGraphFactory:
         else:
             raise StopIteration
 
-    def _is_atomic(self, rdfsubject, rdfobject):
-        if not (isinstance(rdfsubject, rdflib.BNode) or isinstance(rdfobject, rdflib.BNode)):
-            return True
-        return False
-
     def _blank_node_adding(self, node):
         if(isinstance(node, rdflib.BNode)):
             self.nextNodeCurrent.append(node)
@@ -107,26 +102,20 @@ class AtomicGraph(rdflib.Graph):
 
     def __hash__(self):
         if(self._hashOn):
-            return self._colourPartitions.__hash__()
+            return self.colourPartitions.__hash__()
         else:
             return super().__hash__()
-
-    def __lt__(self, other):
-        return hash(self) < hash(other)
-
-    def __le__(self, other):
-        return hash(self) <= hash(other)
 
     def __str__(self):
         result = ""
         for subj, pred, obj in self:
-            result += "{0} {1} {2}.\n".format(self._colourPartitions[subj],
-                                              self._colourPartitions[pred],
-                                              self._colourPartitions[obj])
+            result += "{0} {1} {2}.\n".format(self.colourPartitions[subj],
+                                              self.colourPartitions[pred],
+                                              self.colourPartitions[obj])
         return result
 
     def __repr__(self):
-        return "AtomicHashGraph(#IsoPartitions: {})".format(len(self._colourPartitions))
+        return "AtomicHashGraph(#IsoPartitions: {})".format(len(self.colourPartitions))
 
     def switchOnHash(self):
         self._hashOn = True
