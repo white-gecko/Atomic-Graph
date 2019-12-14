@@ -18,8 +18,8 @@ before_script:
   - pylava
 
 script:
-  - coverage run --source=atomicgraph/ -a tests/compareParseData.py
-  - coverage run --source=atomicgraph/ -a tests/test_simpleisomorphism.py
+  - coverage run --source=atomicgraphs/ -a tests/compareParseData.py
+  - coverage run --source=atomicgraphs/ -a tests/test_simpleisomorphism.py
 
 after_success:
   - coverage report -m
