@@ -20,6 +20,7 @@ before_script:
 script:
   - coverage run --source=atomicgraphs/ -a tests/compareParseData.py
   - coverage run --source=atomicgraphs/ -a tests/test_simpleisomorphism.py
+  - coverage run --source=atomicgraphs/ -a tests/test_utils.py
 
 after_success:
   - coverage report -m
