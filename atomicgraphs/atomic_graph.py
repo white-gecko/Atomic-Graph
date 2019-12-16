@@ -40,9 +40,10 @@ class AtomicGraphFactory:
     def _atomic(self, statement, newNode):
         if(not isinstance(statement[newNode], rdflib.BNode)):
             newAtomicGraph = rdflib.Graph('AtomicStore')
+            self.graph.store.moveStatement(statement, from=self.graph, to=newAtomicGraph)
             newAtomicGraph.add(statement)
-            self.atomicGraphs.add(newAtomicGraph)
             self.graph.remove(statement)
+            self.atomicGraphs.add(newAtomicGraph)
             self.nextNodeOther.append(statement[newNode])
         else:
             self.nextNodeBlank.append(statement[newNode])
