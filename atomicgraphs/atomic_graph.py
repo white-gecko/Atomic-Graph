@@ -1,12 +1,12 @@
 import rdflib
-from atomicgraphs import coloring
+from atomicgraphs.coloring import IsomorphicPartitioner
 
 
 class AtomicGraphFactory:
     def __init__(self, graph):
-        self.graph = rdflib.Graph('AtomicStore')
+        self.graph = rdflib.Graph()
         # make a copy of the graph so the original does not get consumed
-        self.graph = self.graph + graph
+        self.graph += graph
         self.atomicGraphs = set()
         self.currentAtomicGraph = rdflib.Graph('AtomicStore')
         self.nextNodeOther = []
@@ -23,7 +23,7 @@ class AtomicGraphFactory:
     def __next__(self):
         graph = next(self.iter)
         if graph:
-            partitioner = coloring.IsomorphicPartitioner()
+            partitioner = IsomorphicPartitioner()
             aGraph = AtomicGraph(store=graph.store, identifier=graph.identifier,
                                  namespace_manager=graph.namespace_manager)
             aGraph.colourPartitions = partitioner.partitionIsomorphic(graph)
@@ -119,7 +119,6 @@ class AtomicGraph(rdflib.Graph):
 
     def switchOnHash(self):
         self._hashOn = True
-        return self.__hash__()
 
     @property
     def colourPartitions(self):

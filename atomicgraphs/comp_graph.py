@@ -1,5 +1,5 @@
 import rdflib
-from atomicgraphs import atomic_graph
+from atomicgraphs.atomic_graph import AtomicGraphFactory
 from atomicgraphs.hash_combiner import HashCombiner
 
 
@@ -53,7 +53,7 @@ class ComparableGraph(rdflib.Graph, HashCombiner):
         return super().__isub__(other)
 
     def recalculatePartition(self):
-        slicer = atomic_graph.AtomicGraphFactory(self)
+        slicer = AtomicGraphFactory(self)
         self._partition = set()
         hashList = []
         for atomicGraph in slicer:
