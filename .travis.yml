@@ -25,3 +25,10 @@ script:
 after_success:
   - coverage report -m
   - coveralls
+
+deploy:
+  provider: pypi
+  user: ...
+  password: ...
+  on:
+    tags: true
