@@ -4,11 +4,11 @@ from atomicgraphs.coloring import IsomorphicPartitioner
 
 class AtomicGraphFactory:
     def __init__(self, graph):
-        self.graph = rdflib.Graph()
+        self.graph = rdflib.Graph('AtomicStore')
         # make a copy of the graph so the original does not get consumed
         self.graph += graph
         self.atomicGraphs = set()
-        self.currentAtomicGraph = rdflib.Graph('AtomicStore')
+        self.currentAtomicGraph = rdflib.Graph(store=self.graph.store)
         self.nextNodeOther = []
         self.nextNodeBlank = []
         self.nextNodeCurrent = []
@@ -39,10 +39,9 @@ class AtomicGraphFactory:
 
     def _atomic(self, statement, newNode):
         if(not isinstance(statement[newNode], rdflib.BNode)):
-            newAtomicGraph = rdflib.Graph('AtomicStore')
-            newAtomicGraph.add(statement)
+            newAtomicGraph = rdflib.Graph(store=self.graph.store)
+            self.graph.store.moveStatement(statement, source=self.graph, destination=newAtomicGraph)
             self.atomicGraphs.add(newAtomicGraph)
-            self.graph.remove(statement)
             self.nextNodeOther.append(statement[newNode])
         else:
             self.nextNodeBlank.append(statement[newNode])
@@ -50,12 +49,12 @@ class AtomicGraphFactory:
     def _analyse_node(self, node):
         if(isinstance(node, rdflib.BNode)):
             for tupel in iter(self.graph.predicate_objects(node)):
-                self.currentAtomicGraph.add((node, tupel[0], tupel[1]))
-                self.graph.remove((node, tupel[0], tupel[1]))
+                self.graph.store.moveStatement((node, tupel[0], tupel[1]), source=self.graph,
+                                               destination=self.currentAtomicGraph)
                 self._blank_node_adding(tupel[1])
             for tupel in iter(self.graph.subject_predicates(node)):
-                self.currentAtomicGraph.add((tupel[0], tupel[1], node))
-                self.graph.remove((tupel[0], tupel[1], node))
+                self.graph.store.moveStatement((tupel[0], tupel[1], node), source=self.graph,
+                                               destination=self.currentAtomicGraph)
                 self._blank_node_adding(tupel[0])
         else:
             for tupel in iter(self.graph.predicate_objects(node)):
@@ -70,7 +69,7 @@ class AtomicGraphFactory:
         # if no further nodes are found the current atomic graph is done
         if(self.currentAtomicGraph):
             self.atomicGraphs.add(self.currentAtomicGraph)
-            self.currentAtomicGraph = rdflib.Graph('AtomicStore')
+            self.currentAtomicGraph = rdflib.Graph(store=self.graph.store)
         if(self.nextNodeBlank):
             return self.nextNodeBlank.pop()
         if(self.nextNodeOther):
