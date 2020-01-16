@@ -28,7 +28,7 @@ after_success:
 
 deploy:
   provider: pypi
-  user: ...
-  password: ...
+  user: __token__
+  password: pypi-AgEIcHlwaS5vcmcCJDQyMmY3NmQ1LTk4YTctNDk5Ni1hY2Y3LTRhZDc2YTBlYzUzNwACPXsicGVybWlzc2lvbnMiOiB7InByb2plY3RzIjogWyJhdG9taWNncmFwaHMiXX0sICJ2ZXJzaW9uIjogMX0AAAYgAEJyvw87CJilzH385fZvJ2OcH8yvyUdT8oteRyhW7Y8
   on:
     tags: true
