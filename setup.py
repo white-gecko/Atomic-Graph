@@ -11,7 +11,7 @@ from setuptools import setup
 
 setup(
     name='atomicgraphs',
-    version='0.1.1',
+    version='0.1.2',
     description=("This is a library to split an RDF Graph into atomic graphs."),
     long_description=__doc__,
     author='Simaris',
