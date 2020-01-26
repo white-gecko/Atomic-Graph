@@ -29,3 +29,11 @@ class AtomicStore(memory.IOMemory):
         self._IOMemory__addTripleContext(enctriple, destination, False)
         cid = self._IOMemory__obj2id(source)
         self._IOMemory__removeTripleContext(enctriple, cid)
+
+    def predicate_objects(self, subject, context):
+        for (s, p, o), cg in self.triples((subject, None, None), context=context):
+            yield (p, o)
+
+    def subject_predicates(self, object, context):
+        for (s, p, o), cg in self.triples((None, None, object), context=context):
+            yield (s, p)
