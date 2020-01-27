@@ -11,7 +11,14 @@ from setuptools import setup
 
 setup(
     name='atomicgraphs',
-    version='0.1.3',
+    use_scm_version={
+        "root": ".",
+        "version_scheme": "guess-next-dev",
+        "write_to": "version.txt",
+        'write_to_template': '__version__ = "{version}"',
+        'tag_regex': r'^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$'
+    },
+    setup_requires=['setuptools_scm'],
     description=("This is a library to split an RDF Graph into atomic graphs."),
     long_description=__doc__,
     author='Simaris',
