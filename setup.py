@@ -11,7 +11,6 @@ from setuptools import setup
 
 setup(
     name='atomicgraphs',
-    version='0.1.3',
     use_scm_version={
         "root": ".",
         "version_scheme": "guess-next-dev",
