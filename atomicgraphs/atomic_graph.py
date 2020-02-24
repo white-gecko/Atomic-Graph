@@ -6,14 +6,17 @@ class AtomicGraphFactory:
     def __init__(self, graph):
         if(issubclass(graph.__class__, rdflib.ConjunctiveGraph)):
             self.graph = rdflib.ConjunctiveGraph('AtomicStore')
-            self.contexts = [graph.contexts]
+            for quad in graph.quads():
+                self.graph.add((quad[0], quad[1], quad[2], quad[3].identifier))
+            self.contexts = list(self.graph.contexts())
         else:
             self.graph = rdflib.Graph('AtomicStore')
-            self.contexts = [graph]
+            self.graph += graph
+            self.contexts = [self.graph]  # graph and self.graph are not the same context
         # make a copy of the graph so the original does not get consumed
-        self.graph += graph
         self.atomicGraphs = set()
         self.currentAtomicGraph = rdflib.Graph(store=self.graph.store)
+        self.currentAtomicGraph.store.addNewContext(self.currentAtomicGraph)
         self.nextNodeOther = []
         self.nextNodeBlank = []
         self.nextNodeCurrent = []
@@ -55,21 +58,24 @@ class AtomicGraphFactory:
 
     def _analyse_node(self, node):
         if(isinstance(node, rdflib.BNode)):
-            for tupel in iter(self.graph.store.predicate_objects(node, self.currentContext)):
-                self.graph.store.moveStatement((node, tupel[0], tupel[1]),
-                                               source=self.currentContext,
-                                               destination=self.currentAtomicGraph)
+            for tupel in iter(self.currentContext.store.predicate_objects(node,
+                                                                          self.currentContext)):
+                self.currentContext.store.moveStatement((node, tupel[0], tupel[1]),
+                                                        source=self.currentContext,
+                                                        destination=self.currentAtomicGraph)
                 self._blank_node_adding(tupel[1])
-            for tupel in iter(self.graph.store.subject_predicates(node, self.currentContext)):
-                self.graph.store.moveStatement((tupel[0], tupel[1], node),
-                                               source=self.currentContext,
-                                               destination=self.currentAtomicGraph)
+            for tupel in iter(self.currentContext.store.subject_predicates(node,
+                                                                           self.currentContext)):
+                self.currentContext.store.moveStatement((tupel[0], tupel[1], node),
+                                                        source=self.currentContext,
+                                                        destination=self.currentAtomicGraph)
                 self._blank_node_adding(tupel[0])
         else:
-            for tupel in iter(self.graph.store.predicate_objects(node, self.currentContext)):
+            for tupel in iter(self.currentContext.store.predicate_objects(node,
+                                                                          self.currentContext)):
                 self._atomic((node, tupel[0], tupel[1]), 2)
-
-            for tupel in iter(self.graph.store.subject_predicates(node, self.currentContext)):
+            for tupel in iter(self.currentContext.store.subject_predicates(node,
+                                                                           self.currentContext)):
                 self._atomic((tupel[0], tupel[1], node), 0)
 
     def _next_node(self):
@@ -79,6 +85,7 @@ class AtomicGraphFactory:
         if(self.currentAtomicGraph):
             self.atomicGraphs.add(self.currentAtomicGraph)
             self.currentAtomicGraph = rdflib.Graph(store=self.graph.store)
+            self.graph.store.addNewContext(self.currentAtomicGraph)
         if(self.nextNodeBlank):
             return self.nextNodeBlank.pop()
         if(self.nextNodeOther):
@@ -93,10 +100,9 @@ class AtomicGraphFactory:
                 self._analyse_node(node)
                 node = self._next_node()
                 while(node):  # empty lists are falsy
-                    print("===================================================")
                     self._analyse_node(node)
                     node = self._next_node()
-            # in case the graph has disconnected parts
+                # in case the graph has disconnected parts
                 node = next(iter(self.currentContext.all_nodes()), False)
 
 
