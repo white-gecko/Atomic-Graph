@@ -39,8 +39,7 @@ class TestConjunctiveGraphCases(unittest.TestCase):
                     rdflib.URIRef("http://predicate.com/"),
                     bNodeC,
                     rdflib.URIRef("http://context.com/1")))
-        factory = atomic_graph.AtomicGraphFactory(cGraph)
-        container = [x for x in factory]
+
         controllGroup0 = set()
         controllGroup0.add(("(rdflib.term.BNode('_:1'), "
                             "rdflib.term.URIRef('http://predicate.com/'),"
@@ -64,10 +63,13 @@ class TestConjunctiveGraphCases(unittest.TestCase):
         controllGroup2.add(("(rdflib.term.BNode('_:1'), "
                             "rdflib.term.URIRef('http://predicate.com/'), "
                             "rdflib.term.BNode('_:3'))"))
+
         controllGroups = [controllGroup0, controllGroup1, controllGroup2]
-        for atom in container:
+
+        factory = atomic_graph.AtomicGraphFactory(cGraph)
+        for atom in factory:
             group = set()
-            for triple in atom.triples((None, None, None)):
+            for triple in atom:
                 group.add(str(triple))
             assert group in controllGroups
             controllGroups.remove(group)
