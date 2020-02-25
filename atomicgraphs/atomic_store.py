@@ -26,6 +26,20 @@ class AtomicStore(memory.IOMemory):
         destination -- the object of the destination context
         """
         enctriple = self._IOMemory__encodeTriple(triple)
+        self._IOMemory__all_contexts.add(destination)
         self._IOMemory__addTripleContext(enctriple, destination, False)
         cid = self._IOMemory__obj2id(source)
         self._IOMemory__removeTripleContext(enctriple, cid)
+        if(len(self._IOMemory__contextTriples[cid]) == 0):
+            del self._IOMemory__contextTriples[cid]
+
+    def addNewContext(self, context):
+        self._IOMemory__all_contexts.add(context)
+
+    def predicate_objects(self, subject, context):
+        for (s, p, o), cg in self.triples((subject, None, None), context=context):
+            yield (p, o)
+
+    def subject_predicates(self, object, context):
+        for (s, p, o), cg in self.triples((None, None, object), context=context):
+            yield (s, p)
