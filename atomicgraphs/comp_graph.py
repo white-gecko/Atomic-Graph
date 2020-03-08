@@ -3,9 +3,9 @@ from atomicgraphs.atomic_graph import AtomicGraphFactory
 from atomicgraphs.hash_combiner import HashCombiner
 
 
-class ComparableGraph(rdflib.Graph, HashCombiner):
+class ComparableGraph(rdflib.ConjunctiveGraph, HashCombiner):
     def __init__(self, store='default', identifier=None, namespace_manager=None):
-        super(ComparableGraph, self).__init__(store, identifier, namespace_manager)
+        super(ComparableGraph, self).__init__(store, identifier)
         self.invalidate()
 
     def __add__(self, other):
