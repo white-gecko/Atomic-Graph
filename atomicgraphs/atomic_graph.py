@@ -3,7 +3,7 @@ from atomicgraphs.coloring import IsomorphicPartitioner
 
 
 class AtomicGraphFactory:
-    def __init__(self, graph):
+    def __init__(self, graph, nodeList=None):
         if(issubclass(graph.__class__, rdflib.ConjunctiveGraph)):
             self.graph = rdflib.ConjunctiveGraph('AtomicStore')
             for quad in graph.quads():
@@ -21,6 +21,22 @@ class AtomicGraphFactory:
         self.nextNodeBlank = []
         self.nextNodeCurrent = []
         self.iter = None
+        if(nodeList is None):
+            def provideNewNodeFromGraph():
+                return next(iter(self.currentContext.all_nodes()), False)
+            self.provideNode = provideNewNodeFromGraph
+            self.convertEntireGraph = True
+        else:
+            if(not issubclass(nodeList.__class__, list().__class__)):
+                nodeList = list(nodeList)
+
+            def provideNewNodeFromList():
+                if(len(nodeList) > 0):
+                    return nodeList.pop()
+                else:
+                    return False
+            self.provideNode = provideNewNodeFromList
+            self.convertEntireGraph = False
 
     def __iter__(self):
         if self.iter is None:
@@ -86,6 +102,8 @@ class AtomicGraphFactory:
             self.atomicGraphs.add(self.currentAtomicGraph)
             self.currentAtomicGraph = rdflib.Graph(store=self.graph.store)
             self.graph.store.addNewContext(self.currentAtomicGraph)
+        if(not self.convertEntireGraph):
+            return False
         if(self.nextNodeBlank):
             return self.nextNodeBlank.pop()
         if(self.nextNodeOther):
@@ -95,7 +113,7 @@ class AtomicGraphFactory:
     def _run(self):
         for context in self.contexts:
             self.currentContext = context
-            node = next(iter(self.currentContext.all_nodes()), False)
+            node = self.provideNode()
             while(node):
                 self._analyse_node(node)
                 node = self._next_node()
@@ -103,7 +121,7 @@ class AtomicGraphFactory:
                     self._analyse_node(node)
                     node = self._next_node()
                 # in case the graph has disconnected parts
-                node = next(iter(self.currentContext.all_nodes()), False)
+                node = self.provideNode()
 
 
 class AtomicGraph(rdflib.Graph):

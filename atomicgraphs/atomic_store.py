@@ -8,6 +8,7 @@ class AtomicStore(memory.IOMemory):
     It deals with the context -> triple and triples -> context mappings and the obj2int and int2obj
     data structures.
     """
+
     def switchID(self, graph):
         id = self._IOMemory__obj2int[graph]
         del self._IOMemory__obj2int[graph]

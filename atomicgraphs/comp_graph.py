@@ -6,6 +6,7 @@ from atomicgraphs.hash_combiner import HashCombiner
 class ComparableGraph(rdflib.ConjunctiveGraph, HashCombiner):
     def __init__(self, store='default', identifier=None, namespace_manager=None):
         super(ComparableGraph, self).__init__(store, identifier)
+        self.nodeList = None
         self.invalidate()
 
     def __add__(self, other):
@@ -53,7 +54,7 @@ class ComparableGraph(rdflib.ConjunctiveGraph, HashCombiner):
         return super().__isub__(other)
 
     def recalculatePartition(self):
-        slicer = AtomicGraphFactory(self)
+        slicer = AtomicGraphFactory(self, self.nodeList)
         self._partition = set()
         hashList = []
         for atomicGraph in slicer:
@@ -114,3 +115,6 @@ class ComparableGraph(rdflib.ConjunctiveGraph, HashCombiner):
         return super().update(update_object=update_object, processor=processor, initNs=initNs,
                               initBindings=initBindings, use_store_provided=use_store_provided,
                               **kwargs)
+
+    def setNodeList(self, nodeList):
+        self.nodeList = nodeList

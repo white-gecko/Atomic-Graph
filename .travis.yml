@@ -23,6 +23,7 @@ script:
   - coverage run --source=atomicgraphs/ -a tests/test_utils.py
   - coverage run --source=atomicgraphs/ -a tests/test_diff.py
   - coverage run --source=atomicgraphs/ -a tests/test_conjunctive_graph.py
+  - coverage run --source=atomicgraphs/ -a tests/test_selective_comparable_graph.py
 
 after_success:
   - coverage report -m
