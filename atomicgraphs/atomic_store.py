@@ -1,7 +1,7 @@
-from rdflib.plugins import memory
+from rdflib.plugins.stores import memory
 
 
-class AtomicStore(memory.IOMemory):
+class AtomicStore(memory.Memory):
     """The AtomicStore is based on the IOMemory store and implements special methods for the
     AtomicGraph handling.
 
@@ -10,13 +10,11 @@ class AtomicStore(memory.IOMemory):
     """
 
     def switchID(self, graph):
-        id = self._IOMemory__obj2int[graph]
-        del self._IOMemory__obj2int[graph]
+        self._Memory__all_contexts.remove(graph)
         # The switchOnHash method changes the way __hash__() is implemented
         # So we just rewrite the _IOMemory__obj2int and _IOMemory__int2obj structures
         graph.switchOnHash()
-        self._IOMemory__obj2int[graph] = id
-        self._IOMemory__int2obj[id] = graph
+        self._Memory__all_contexts.add(graph)
 
     def moveStatement(self, triple, source, destination):
         """This method moves a statement within the store between contexts.
@@ -26,16 +24,15 @@ class AtomicStore(memory.IOMemory):
         source -- the object of the source context
         destination -- the object of the destination context
         """
-        enctriple = self._IOMemory__encodeTriple(triple)
-        self._IOMemory__all_contexts.add(destination)
-        self._IOMemory__addTripleContext(enctriple, destination, False)
-        cid = self._IOMemory__obj2id(source)
-        self._IOMemory__removeTripleContext(enctriple, cid)
-        if(len(self._IOMemory__contextTriples[cid]) == 0):
-            del self._IOMemory__contextTriples[cid]
+        self._Memory__all_contexts.add(destination)
+        self._Memory__add_triple_context(triple, destination, False)
+        ctx = self._Memory__ctx_to_str(source)
+        self._Memory__remove_triple_context(triple, ctx)
+        if(len(self._Memory__contextTriples[ctx]) == 0):
+            del self._Memory__contextTriples[ctx]
 
     def addNewContext(self, context):
-        self._IOMemory__all_contexts.add(context)
+        self._Memory__all_contexts.add(context)
 
     def predicate_objects(self, subject, context):
         for (s, p, o), cg in self.triples((subject, None, None), context=context):
