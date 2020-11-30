@@ -1,2 +1,2 @@
-rdflib
+git+https://github.com/RDFLib/rdflib@master#egg=rdflib[sparql]
 sortedcontainers
