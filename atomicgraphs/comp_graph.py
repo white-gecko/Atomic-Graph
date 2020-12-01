@@ -118,3 +118,27 @@ class ComparableGraph(rdflib.ConjunctiveGraph, HashCombiner):
 
     def setNodeList(self, nodeList):
         self.nodeList = nodeList
+
+    def getBNodeColourMap(self):
+        map = {}
+        if self._hash is None:
+            self.recalculatePartition()
+        for atomicGraph in self._partition:
+            for node in self._nodes(atomicGraph):
+                if isinstance(node, rdflib.BNode):
+                    map[node] = atomicGraph.colourPartitions[node]
+        return map
+
+    def uniqueBNodes(self):
+        for atomicGraph in self._partition:
+            for node in self._nodes(atomicGraph):
+                if isinstance(node, rdflib.BNode):
+                    yield node
+
+    def _nodes(self, graph):
+        result = set()
+        for subj, pred, obj in graph:
+            result.add(subj)
+            result.add(obj)
+        for node in result:
+            yield node
