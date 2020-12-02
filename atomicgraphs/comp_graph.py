@@ -57,8 +57,11 @@ class ComparableGraph(rdflib.ConjunctiveGraph, HashCombiner):
         slicer = AtomicGraphFactory(self, self.nodeList)
         self._partition = set()
         hashList = []
+        self._unifiedColourMap = {}
         for atomicGraph in slicer:
             self._partition.add(atomicGraph)
+            self._unifiedColourMap = {**(self._unifiedColourMap),
+                                      **(atomicGraph.colourPartitions._colourMap)}
             hashList.append(atomicGraph.__hash__().to_bytes(16, 'big'))
         hashList.sort()
         # this hash should not be returned by __hash__ since it can change
@@ -120,14 +123,9 @@ class ComparableGraph(rdflib.ConjunctiveGraph, HashCombiner):
         self.nodeList = nodeList
 
     def getBNodeColourMap(self):
-        map = {}
         if self._hash is None:
             self.recalculatePartition()
-        for atomicGraph in self._partition:
-            for node in self._nodes(atomicGraph):
-                if isinstance(node, rdflib.BNode):
-                    map[node] = atomicGraph.colourPartitions[node]
-        return map
+        return self._unifiedColourMap
 
     def uniqueBNodes(self):
         for atomicGraph in self._partition:
