@@ -91,7 +91,7 @@ class ComparableGraph(rdflib.ConjunctiveGraph, HashCombiner):
         if(self.hash == other.hash):
             return ({}, {})
         else:
-            return (other._partition - self._partition, self._partition - other._partition)
+            return (other.partition - self.partition, self.partition - other.partition)
 
     def add(self, triple):
         super().add(triple)
