@@ -4,5 +4,5 @@ class HashCombiner:
         resultBytes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         for code in iter(code_array):
             for i in range(0, 16):
-                resultBytes[i] = (((resultBytes[i] + 29) * 37) % 256) ^ code[i]
+                resultBytes[i] = (((resultBytes[i] + 11) * 37) % 256) ^ code[i]
         return bytes(resultBytes)
