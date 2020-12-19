@@ -59,10 +59,6 @@ class ComparableGraph(rdflib.ConjunctiveGraph, HashCombiner):
         hashList = []
         self._unifiedColourMap = {}
         for atomicGraph in slicer:
-            print("===")
-            for triple in atomicGraph:
-                print(triple)
-            print("...")
             self._partition.add(atomicGraph)
             self._unifiedColourMap = {**(self._unifiedColourMap),
                                       **(atomicGraph.colourPartitions._colourMap)}

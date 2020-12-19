@@ -1,4 +1,5 @@
 import rdflib
+import hashlib
 from atomicgraphs.coloring import IsomorphicPartitioner
 
 
@@ -137,7 +138,16 @@ class AtomicGraph(rdflib.Graph):
 
     def __hash__(self):
         if(self._hashOn):
-            return self.colourPartitions.__hash__()
+            hashValue = self.colourPartitions.__hash__()
+            if hashValue == 0:
+                hashAlgo = hashlib.md5()
+                for triple in self:
+                    hashAlgo.update(triple[0].n3().encode('utf-8'))
+                    hashAlgo.update(triple[1].n3().encode('utf-8'))
+                    hashAlgo.update(triple[2].n3().encode('utf-8'))
+                    hashValue = hashAlgo.digest()
+                return int.from_bytes(hashValue, byteorder='big')
+            return hashValue
         else:
             return super().__hash__()
 
