@@ -13,7 +13,7 @@ class IsomorphicPartitioner:
         self.__blank_hash = self.__hash_type("[]".encode('utf-8')).digest()
         self.__marker_hash = self.__hash_type("[@]".encode('utf-8')).digest()
         self.__hashBag = IsomorphicPartitioner.__HashBag()
-        self.__hashTupel = IsomorphicPartitioner.__HashTupel()
+        self.__hashTuple = IsomorphicPartitioner.__HashTuple()
         self.__genericHashCombiner = HashCombiner()
 
     def _colour(self, graph, colour=None):
@@ -27,11 +27,11 @@ class IsomorphicPartitioner:
             colour = colourPrevious.copy()
             for subj, pred, obje in graph:
                 if(isinstance(subj, rdflib.BNode)):
-                    c = self.__hashTupel.hash(colourPrevious[pred],
+                    c = self.__hashTuple.hash(colourPrevious[pred],
                                               colourPrevious[obje])
                     self.__hashBag.add(subj, c)
-                elif(isinstance(obje, rdflib.BNode)):
-                    c = self.__hashTupel.hash(colourPrevious[subj],
+                if(isinstance(obje, rdflib.BNode)):
+                    c = self.__hashTuple.hash(colourPrevious[subj],
                                               colourPrevious[pred])
                     self.__hashBag.add(obje, c)
             self.__hashBag.trigger_hashing(colour)
@@ -75,7 +75,7 @@ class IsomorphicPartitioner:
         sPart = self._lowest_non_trivial_partition(partitions)
         for bnode in sPart:
             # should clr itself be changed or just a copy?
-            clr[bnode] = self.__hashTupel.hash(clr[bnode],
+            clr[bnode] = self.__hashTuple.hash(clr[bnode],
                                                self._generate_marker())
             clrExt = self._colour(graph, clr)
             bPart = self._refine(partitions, clrExt, bnode, blanknodes)
@@ -182,7 +182,7 @@ class IsomorphicPartitioner:
         blanknodes = self._extract_blanknodes(graph)
         return self._create_partitions(colour, blanknodes)
 
-    class __HashTupel(HashCombiner):
+    class __HashTuple(HashCombiner):
         def hash(self, colour1, colour2):
             return self.combine_ordered([colour1, colour2])
 
