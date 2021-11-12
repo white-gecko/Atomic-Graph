@@ -1,0 +1,9 @@
+
+_:a <urn:ex:a> _:b .
+_:b <urn:ex:a> _:d .
+_:d <urn:ex:a> _:e .
+_:e <urn:ex:a> _:b .
+_:b <urn:ex:a> _:c .
+_:c <urn:ex:a> _:d .
+_:d <urn:ex:a> _:a .
+_:a <urn:ex:a> _:e .
