@@ -1,1 +1,6 @@
 **/__pycache__/**
+.coverage
+.eggs
+dist
+eval.zip
+eval
